@@ -20,11 +20,9 @@ SELECT article_id, author, topic, title, body,
 created_at, votes, article_img_url
 FROM articles
 WHERE article_id = $1;`;
-  if (typeof article_id !== 'number' || isNaN(article_id))
-    return Promise.reject('Invalid article ID');
-  else
-    return db.query(articleQueryString, [article_id]).then(({ rows }) => {
-      if (!rows[0]) return Promise.reject('Article not found');
-      else return rows[0];
-    });
+
+  return db.query(articleQueryString, [article_id]).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject('Article not found');
+    else return rows[0];
+  });
 };
