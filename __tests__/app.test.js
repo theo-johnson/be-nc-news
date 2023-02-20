@@ -78,3 +78,44 @@ describe('/api/articles', () => {
     });
   });
 });
+
+describe('/api/articles/:article_id', () => {
+  describe('GET', () => {
+    it(`responds to a valid request with a 200 status code and an article object with author, title, article_id, body, topic, created_at, votes, and article_img_url properties`, () => {
+      return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toMatchObject({
+            article_id: 2,
+            author: 'icellusedkars',
+            title: 'A',
+            topic: 'mitch',
+            created_at: '2020-10-18 02:00:00',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+          });
+        });
+    });
+    it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
+      return request(app)
+        .get('/api/articles/banana')
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid article ID');
+        });
+    });
+    it(`responds to an article_id with no database entry with a 404 status code and an error message 'Article not found`, () => {
+      return request(app)
+        .get('/api/articles/9000')
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Article not found');
+        });
+    });
+  });
+});
