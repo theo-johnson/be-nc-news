@@ -119,3 +119,29 @@ describe('/api/articles/:article_id', () => {
     });
   });
 });
+
+describe('/api/articles/:article_id/comments', () => {
+  describe('POST', () => {
+    const commentInput = {
+      username: 'butter_bridge',
+      body: 'Loved it, great article!',
+    };
+    it(`responds to a valid request with a 201 status code and the comment object that was successfully added`, () => {
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send(commentInput)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedComment } = body;
+          expect(postedComment).toMatchObject({
+            comment_id: expect.any(Number),
+            author: 'butter_bridge',
+            created_at: expect.any(String),
+            votes: 0,
+            body: 'Loved it, great article!',
+            article_id: 2,
+          });
+        });
+    });
+  });
+});

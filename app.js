@@ -3,6 +3,7 @@ const { getTopics } = require('./controllers/topics-controllers');
 const {
   getArticles,
   getArticleById,
+  postComment,
 } = require('./controllers/articles-controllers');
 const {
   handlePSQL400Errors,
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.get('/api/topics', getTopics);
 app.get('/api/articles', getArticles);
+app.post('/api/articles/:article_id/comments', postComment);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.use(handlePSQL400Errors);
