@@ -120,28 +120,76 @@ describe('/api/articles/:article_id', () => {
   });
 });
 
-// describe('/api/articles/:article_id/comments', () => {
-//   describe('POST', () => {
-//     const commentInput = {
-//       username: 'butter_bridge',
-//       body: 'Loved it, great article!',
-//     };
-//     it(`responds to a valid request with a 201 status code and the comment object that was successfully added`, () => {
-//       return request(app)
-//         .post('/api/articles/2/comments')
-//         .send(commentInput)
-//         .expect(201)
-//         .then(({ body }) => {
-//           const { postedComment } = body;
-//           expect(postedComment).toMatchObject({
-//             comment_id: expect.any(Number),
-//             author: 'butter_bridge',
-//             created_at: expect.any(String),
-//             votes: 0,
-//             body: 'Loved it, great article!',
-//             article_id: 2,
-//           });
-//         });
-//     });
-//   });
-// });
+describe('/api/articles/:article_id/comments', () => {
+  describe('POST', () => {
+    const commentInput = {
+      username: 'butter_bridge',
+      body: 'Loved it, great article!',
+    };
+    it(`responds to a valid request with a 201 status code and the comment object that was successfully added`, () => {
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send(commentInput)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedComment } = body;
+          expect(postedComment).toMatchObject({
+            comment_id: expect.any(Number),
+            author: 'butter_bridge',
+            created_at: expect.any(String),
+            votes: 0,
+            body: 'Loved it, great article!',
+            article_id: 2,
+          });
+        });
+    });
+    it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
+      return request(app)
+        .post('/api/articles/banana/comments')
+        .send(commentInput)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid article ID');
+        });
+    });
+    it(`responds to an article_id with no database entry with a 404 status code and an error message 'Article not found`, () => {
+      return request(app)
+        .post('/api/articles/9000/comments')
+        .send(commentInput)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Article not found');
+        });
+    });
+    it(`responds to an invalid comment object with a 400 status code and an error message 'Invalid comment`, () => {
+      const invalidComment = {
+        user: 'Tom',
+        content: 3,
+      };
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send(invalidComment)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid comment');
+        });
+    });
+    it.only(`responds to a valid comment with a user not in database with a 404 status code and an error message 'Username not found`, () => {
+      const invalidComment = {
+        username: 'Tom',
+        body: 'Great article!',
+      };
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send(invalidComment)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Username not found');
+        });
+    });
+  });
+});

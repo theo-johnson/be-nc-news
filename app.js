@@ -7,6 +7,7 @@ const {
 } = require('./controllers/articles-controllers');
 const {
   handlePSQL400Errors,
+  handlePSQL404Errors,
   handleCustom500Errors,
   handleCustom400Errors,
   handleCustom404Errors,
@@ -21,6 +22,7 @@ app.post('/api/articles/:article_id/comments', postComment);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.use(handlePSQL400Errors);
+app.use(handlePSQL404Errors);
 app.use(handleCustom400Errors);
 app.use(handleCustom404Errors);
 app.use(handleCustom500Errors);

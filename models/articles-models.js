@@ -30,7 +30,6 @@ WHERE article_id = $1;`;
 exports.insertComment = (article_id, comment) => {
   const { body } = comment;
   const author = comment.username;
-  console.log(body, author, article_id, ' <<<<<<<<<');
   const commentQueryString = `
 INSERT INTO comments (body, author, article_id)
 VALUES ($1, $2, $3)
