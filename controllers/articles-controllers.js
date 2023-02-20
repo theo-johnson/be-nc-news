@@ -28,8 +28,8 @@ exports.getArticleById = (req, res, next) => {
 exports.postComment = (req, res, next) => {
   const article_id = +req.params.article_id;
   fetchArticleById(article_id)
-    .then((article) => {
-      res.status(201).send({ article });
+    .then((postedComment) => {
+      res.status(201).send({ postedComment });
     })
     .catch((err) => {
       next(err);
