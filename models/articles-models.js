@@ -12,3 +12,19 @@ ORDER BY articles.created_at DESC;`;
     return rows;
   });
 };
+
+exports.fetchArticleComments = (article_id) => {
+  if (typeof article_id !== 'number' || isNaN(article_id))
+    return Promise.reject('Invalid article ID');
+  return db
+    .query('SELECT * FROM articles WHERE article_id = $1', [article_id])
+    .then(({ rows }) => {
+      if (!rows[0]) return Promise.reject('Article not found');
+      const articleCommentsQueryString = `SELECT * FROM comments WHERE article_id = $1`;
+      return db.query(articleCommentsQueryString, [article_id]);
+    })
+    .then(({ rows }) => {
+      if (!rows[0]) return Promise.reject('Article has no comments');
+      return rows;
+    });
+};
