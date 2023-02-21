@@ -73,6 +73,81 @@ describe('/api/articles', () => {
           expect(article1.comment_count).toBe(11);
         });
     });
+    it(`responds only with articles with the specified topic when ?topic query is added`, () => {
+      return request(app)
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(1);
+          expect(articles[0]).toMatchObject({
+            article_id: 5,
+            author: 'rogersop',
+            title: 'UNCOVERED: catspiracy to bring down democracy',
+            topic: 'cats',
+            created_at: '2020-08-03T13:14:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: expect.any(Number),
+          });
+        });
+    });
+    it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
+      return request(app)
+        .get('/api/articles?topic=mitch&sort_by=title')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(11);
+          expect(articles).toBeSortedBy('title', { descending: true });
+        });
+    });
+    it(`accounts for the different column naming conventions (articles.title vs comment_count) when ?sort_by query is added`, () => {
+      return request(app)
+        .get('/api/articles?sort_by=comment_count')
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy('comment_count', { descending: true });
+        });
+    });
+    it(`responds with articles sorted in the specified order when ?order query is added`, () => {
+      return request(app)
+        .get('/api/articles?topic=mitch&sort_by=title&order=asc')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(11);
+          expect(articles).toBeSortedBy('title', { descending: false });
+        });
+    });
+    it(`responds to an invalid ?sort_by query with a 400 status code and an error message 'Invalid sort_by column`, () => {
+      return request(app)
+        .get('/api/articles?sort_by=banana')
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid sort_by column');
+        });
+    });
+    it(`responds to an invalid ?order query with a 400 status code and an error message 'Invalid sort order`, () => {
+      return request(app)
+        .get('/api/articles?order=banana')
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid sort order');
+        });
+    });
+    it(`responds to a valid request with a ?topic query matching no articles with a 404 status code and an error message 'No articles found`, () => {
+      return request(app)
+        .get('/api/articles?topic=banana')
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('No articles found');
+        });
+    });
   });
 });
 

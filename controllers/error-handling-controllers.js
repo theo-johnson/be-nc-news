@@ -25,6 +25,12 @@ exports.handleCustom400Errors = (err, req, res, next) => {
   if (err === 'Invalid article ID') {
     console.log(400, err);
     res.status(400).send({ msg: 'Invalid article ID' });
+  } else if (err === 'Invalid sort_by column') {
+    console.log(400, err);
+    res.status(400).send({ msg: 'Invalid sort_by column' });
+  } else if (err === 'Invalid sort order') {
+    console.log(400, err);
+    res.status(400).send({ msg: 'Invalid sort order' });
   } else next(err);
 };
 
@@ -38,6 +44,9 @@ exports.handleCustom404Errors = (err, req, res, next) => {
   } else if (err === 'Article has no comments') {
     console.log(err);
     res.status(404).send({ msg: 'Article has no comments' });
+  } else if (err === 'No articles found') {
+    console.log(err);
+    res.status(404).send({ msg: 'No articles found' });
   } else next(err);
 };
 
