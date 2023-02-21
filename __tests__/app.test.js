@@ -55,17 +55,12 @@ describe('/api/articles', () => {
         });
     });
     it(`sorts the articles in descending date order by default`, () => {
-      const expectedOrder = articleData.sort(
-        (a, b) => b.created_at - a.created_at
-      );
       return request(app)
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          articles.forEach((article, i) =>
-            expect(article.title).toBe(expectedOrder[i].title)
-          );
+          expect(articles).toBeSortedBy('created_at', { descending: true });
         });
     });
     it(`correctly calculates the comment_count property`, () => {
@@ -74,7 +69,8 @@ describe('/api/articles', () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles[0].comment_count).toBe(11);
+          const article1 = articles.find((article) => article.article_id === 1);
+          expect(article1.comment_count).toBe(11);
         });
     });
   });
@@ -84,12 +80,13 @@ describe('/api/articles/:article_id', () => {
   const articleObject = {
     article_id: 2,
     author: 'icellusedkars',
-    title: 'A',
+    title: 'Sony Vaio; or, The Laptop',
     topic: 'mitch',
-    created_at: '2020-10-18T01:00:00.000Z',
+    created_at: '2020-10-16T05:03:00.000Z',
     votes: 0,
     article_img_url:
       'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+    comment_count: 0,
   };
   describe('GET', () => {
     it(`responds to a valid request with a 200 status code and an article object with author, title, article_id, body, topic, created_at, votes, and article_img_url properties`, () => {
@@ -136,7 +133,7 @@ describe('/api/articles/:article_id', () => {
     });
     it(`responds to a valid request with a 201 status code and the article object with the vote count decreased as specified`, () => {
       return request(app)
-        .patch('/api/articles/6')
+        .patch('/api/articles/1')
         .send({ inc_votes: -2 })
         .expect(201)
         .then(({ body }) => {
@@ -242,7 +239,7 @@ describe('/api/articles/:article_id/comments', () => {
           expect(msg).toBe('Article not found');
         });
     });
-    it.only(`responds to an invalid comment object with a 400 status code and an error message 'Invalid request body`, () => {
+    it(`responds to an invalid comment object with a 400 status code and an error message 'Invalid request body`, () => {
       const invalidComment = {
         user: 'Tom',
         content: 3,
