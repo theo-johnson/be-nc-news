@@ -1,16 +1,28 @@
 const db = require('../db/connection');
 
-exports.fetchArticles = () => {
-  const articlesQueryString = `
+exports.fetchArticles = (topic, sort_by = 'created_at', order = 'desc') => {
+  const queryValues = [];
+  if (sort_by && sort_by !== 'comment_count') sort_by = `articles.${sort_by}`;
+
+  let articlesQueryString = `
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
 FROM articles
-FULL OUTER JOIN comments ON comments.article_id = articles.article_id
-GROUP BY articles.article_id
-ORDER BY articles.created_at DESC;`;
-  return db.query(articlesQueryString).then(({ rows }) => {
-    rows.forEach((row) => (row.comment_count = +row.comment_count));
-    return rows;
+FULL OUTER JOIN comments ON comments.article_id = articles.article_id`;
+  if (topic) {
+    queryValues.push(topic);
+    articlesQueryString += `
+WHERE articles.topic = $1`;
+  }
+  articlesQueryString += `
+GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+
+  return db.query(articlesQueryString, queryValues).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject('No articles found');
+    else {
+      rows.forEach((row) => (row.comment_count = +row.comment_count));
+      return rows;
+    }
   });
 };
 
