@@ -69,3 +69,15 @@ RETURNING *;`;
       return rows[0];
     });
 };
+
+exports.updateArticleById = (article_id, update) => {
+  const updateQueryString = `
+UPDATE articles SET votes = votes + $1 WHERE article_id = $2
+RETURNING *;`;
+  return db
+    .query(updateQueryString, [update.inc_votes, article_id])
+    .then(({ rows }) => {
+      if (!rows[0]) return Promise.reject('Article not found');
+      else return rows[0];
+    });
+};
