@@ -39,7 +39,8 @@ exports.getArticleById = (req, res, next) => {
 
 exports.postComment = (req, res, next) => {
   const article_id = +req.params.article_id;
-  fetchArticleById(article_id)
+  const comment = req.body;
+  insertComment(article_id, comment)
     .then((postedComment) => {
       res.status(201).send({ postedComment });
     })
