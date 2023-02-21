@@ -2,6 +2,22 @@ exports.handlePSQL400Errors = (err, req, res, next) => {
   if (err.code === '22P02') {
     console.log(400, err);
     res.status(400).send({ msg: 'Invalid article ID' });
+  } else if (err.code === '23502') {
+    console.log(400, err);
+    res.status(400).send({ msg: 'Invalid request body' });
+  } else next(err);
+};
+
+exports.handlePSQL404Errors = (err, req, res, next) => {
+  if (
+    err.code === '23503' &&
+    err.detail.endsWith('not present in table "users".')
+  ) {
+    console.log(404, err);
+    res.status(404).send({ msg: 'Username not found' });
+  } else if (err.code === '23503') {
+    console.log(404, err);
+    res.status(404).send({ msg: 'Article not found' });
   } else next(err);
 };
 
