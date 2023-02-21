@@ -6,7 +6,28 @@ const {
 } = require('../models/articles-models');
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  let { topic, sort_by, order } = req.query;
+
+  const validSortOptions = [
+    'article_id',
+    'author',
+    'topic',
+    'title',
+    'created_at',
+    'votes',
+    'article_img_url',
+    'comment_count',
+  ];
+  if (sort_by && !validSortOptions.includes(sort_by)) {
+    next('Invalid sort_by column');
+  }
+
+  const validOrderOptions = ['asc', 'desc'];
+  if (order && !validOrderOptions.includes(order)) {
+    next('Invalid sort order');
+  }
+
+  fetchArticles(topic, sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })

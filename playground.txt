@@ -1,7 +1,1 @@
 You are now connected to database "nc_news_test" as user "theo".
- comment_id |                                                     body                                                     | article_id |    author     | votes |     created_at      
-------------+--------------------------------------------------------------------------------------------------------------+------------+---------------+-------+---------------------
-         14 | What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge. |          5 | icellusedkars |    16 | 2020-06-09 06:00:00
-         15 | I am 100% sure that we're not completely sure.                                                               |          5 | butter_bridge |     1 | 2020-11-24 00:08:00
-(2 rows)
-
