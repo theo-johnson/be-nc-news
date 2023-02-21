@@ -6,20 +6,98 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [{ "description": "Footie!", "slug": "football" }]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of articles without body text",
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "article_id": 7,
+          "author": "icellusedkars",
+          "topic": "mitch",
+          "title": "Z",
+          "created_at": "2020-01-07T14:08:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 0
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article with body text",
+    "queries": ["topic", "sort_by", "order"],
+    "exampleResponse": {
+      "article": {
+        "article_id": 2,
+        "author": "icellusedkars",
+        "topic": "mitch",
+        "title": "Sony Vaio; or, The Laptop",
+        "body": "Call me Mitchell.",
+        "created_at": "2020-10-16T05:03:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 0
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates an article, incrementing its votes property by the value of inc_votes. Serves the updated article",
+    "queries": [],
+    "exampleResponse": {
+      "updatedArticle": {
+        "article_id": 2,
+        "author": "icellusedkars",
+        "topic": "mitch",
+        "title": "Sony Vaio; or, The Laptop",
+        "body": "Call me Mitchell.",
+        "created_at": "2020-10-16T05:03:00.000Z",
+        "votes": 3,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 0
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a new comment to the article with the specified article_id. Serves the posted comment",
+    "queries": [],
+    "exampleResponse": {
+      "postedComment": {
+        "comment_id": 19,
+        "body": "Loved it, great article!",
+        "article_id": 2,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2023-02-21T15:40:36.337Z"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves the comment with the specified comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "Loved it, great article!",
+        "article_id": 2,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2023-02-21T15:40:36.337Z"
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
         }
       ]
     }

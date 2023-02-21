@@ -73,7 +73,7 @@ describe('/api/articles', () => {
           expect(article1.comment_count).toBe(11);
         });
     });
-    it(`responds only with articles with the specified topic when ?topic query is added`, () => {
+    it(`responds with articles with the specified topic when ?topic query is added`, () => {
       return request(app)
         .get('/api/articles?topic=cats')
         .expect(200)
@@ -416,6 +416,25 @@ describe('/api/users', () => {
               username: expect.any(String),
               name: expect.any(String),
               avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+});
+
+describe('/api', () => {
+  describe('GET', () => {
+    it('responds with an object with properties describing each endpoint', () => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+          const { endpoints } = body;
+          expect(Object.keys(endpoints).length).toBe(8);
+          Object.values(endpoints).forEach((endpoint) => {
+            expect(endpoint).toMatchObject({
+              description: expect.any(String),
             });
           });
         });
