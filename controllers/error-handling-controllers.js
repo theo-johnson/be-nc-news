@@ -1,7 +1,7 @@
 exports.handlePSQL400Errors = (err, req, res, next) => {
   if (err.code === '22P02') {
     console.log(400, err);
-    res.status(400).send({ msg: 'Invalid article ID' });
+    res.status(400).send({ msg: 'Invalid ID' });
   } else if (err.code === '23502') {
     console.log(400, err);
     res.status(400).send({ msg: 'Invalid request body' });
@@ -22,9 +22,9 @@ exports.handlePSQL404Errors = (err, req, res, next) => {
 };
 
 exports.handleCustom400Errors = (err, req, res, next) => {
-  if (err === 'Invalid article ID') {
+  if (err === 'Invalid ID') {
     console.log(400, err);
-    res.status(400).send({ msg: 'Invalid article ID' });
+    res.status(400).send({ msg: 'Invalid ID' });
   } else if (err === 'Invalid sort_by column') {
     console.log(400, err);
     res.status(400).send({ msg: 'Invalid sort_by column' });
@@ -38,9 +38,9 @@ exports.handleCustom404Errors = (err, req, res, next) => {
   if (err === 'Article not found') {
     console.log(404, err);
     res.status(404).send({ msg: 'Article not found' });
-  } else if (err === 'Article not found') {
+  } else if (err === 'Comment not found') {
     console.log(err);
-    res.status(404).send({ msg: 'Article not found' });
+    res.status(404).send({ msg: 'Comment not found' });
   } else if (err === 'Article has no comments') {
     console.log(err);
     res.status(404).send({ msg: 'Article has no comments' });

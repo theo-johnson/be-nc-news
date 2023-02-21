@@ -27,7 +27,7 @@ GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
 };
 
 exports.fetchArticleComments = (article_id) => {
-  if (isNaN(article_id)) return Promise.reject('Invalid article ID');
+  if (isNaN(article_id)) return Promise.reject('Invalid ID');
   return db
     .query('SELECT * FROM articles WHERE article_id = $1', [article_id])
     .then(({ rows }) => {
