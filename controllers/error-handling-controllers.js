@@ -4,7 +4,7 @@ exports.handlePSQL400Errors = (err, req, res, next) => {
     res.status(400).send({ msg: 'Invalid article ID' });
   } else if (err.code === '23502') {
     console.log(400, err);
-    res.status(400).send({ msg: 'Invalid comment' });
+    res.status(400).send({ msg: 'Invalid request body' });
   } else next(err);
 };
 
