@@ -120,28 +120,64 @@ describe('/api/articles/:article_id', () => {
   });
 });
 
-// describe('/api/articles/:article_id/comments', () => {
-//   describe('POST', () => {
-//     const commentInput = {
-//       username: 'butter_bridge',
-//       body: 'Loved it, great article!',
-//     };
-//     it(`responds to a valid request with a 201 status code and the comment object that was successfully added`, () => {
-//       return request(app)
-//         .post('/api/articles/2/comments')
-//         .send(commentInput)
-//         .expect(201)
-//         .then(({ body }) => {
-//           const { postedComment } = body;
-//           expect(postedComment).toMatchObject({
-//             comment_id: expect.any(Number),
-//             author: 'butter_bridge',
-//             created_at: expect.any(String),
-//             votes: 0,
-//             body: 'Loved it, great article!',
-//             article_id: 2,
-//           });
-//         });
-//     });
-//   });
-// });
+describe('/api/articles/:article_id/comments', () => {
+  describe('GET', () => {
+    it(`responds to a valid request with a 200 status code and an array of comment objects with comment_id, votes, created_at, author, body and article_id properties`, () => {
+      return request(app)
+        .get('/api/articles/5/comments')
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(2);
+          comments.forEach((comment) =>
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_id: 5,
+            })
+          );
+        });
+    });
+    it(`responds to a valid request with a 200 status code and comments newest comments first`, () => {
+      return request(app)
+        .get('/api/articles/5/comments')
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          console.log(comments);
+          expect(comments).toBeSortedBy('created_at', { descending: true });
+        });
+    });
+    it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
+      return request(app)
+        .get('/api/articles/banana/comments')
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid article ID');
+        });
+    });
+    it(`responds to an article_id with no database entry with a 404 status code and an error message 'Article not found`, () => {
+      return request(app)
+        .get('/api/articles/9000/comments')
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Article not found');
+        });
+    });
+    it(`responds to an article_id with no comments with a 404 status code and an error message 'Article has no comments`, () => {
+      return request(app)
+        .get('/api/articles/2/comments')
+        .expect(404)
+        .then(({ body }) => {
+          console.log(body);
+          const { msg } = body;
+          expect(msg).toBe('Article has no comments');
+        });
+    });
+  });
+});
