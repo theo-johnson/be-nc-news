@@ -8,6 +8,7 @@ const {
   topicData,
   userData,
 } = require('../db/data/test-data/index');
+const { post } = require('../app');
 
 beforeEach(() => {
   return seed({ articleData, commentData, topicData, userData });
@@ -140,6 +141,25 @@ describe('/api/articles/:article_id/comments', () => {
             votes: 0,
             body: 'Loved it, great article!',
             article_id: 2,
+          });
+        });
+    });
+    it(`successfully adds valid comments to the database`, () => {
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send(commentInput)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedComment } = body;
+          const { comment_id } = postedComment;
+          return Promise.all([
+            postedComment,
+            db.query(`SELECT * FROM comments WHERE comment_id = $1`, [
+              comment_id,
+            ]),
+          ]).then(([postedComment, { rows }]) => {
+            rows[0].created_at = rows[0].created_at.toISOString();
+            expect(rows[0]).toEqual(postedComment);
           });
         });
     });
