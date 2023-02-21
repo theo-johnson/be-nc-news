@@ -2,6 +2,9 @@ exports.handlePSQL400Errors = (err, req, res, next) => {
   if (err.code === '22P02') {
     console.log(400, err);
     res.status(400).send({ msg: 'Invalid article ID' });
+  } else if (err.code === '23502') {
+    console.log(400, err);
+    res.status(400).send({ msg: 'Invalid votes' });
   } else next(err);
 };
 

@@ -80,6 +80,16 @@ describe('/api/articles', () => {
 });
 
 describe('/api/articles/:article_id', () => {
+  const articleObject = {
+    article_id: 2,
+    author: 'icellusedkars',
+    title: 'A',
+    topic: 'mitch',
+    created_at: '2020-10-18T01:00:00.000Z',
+    votes: 0,
+    article_img_url:
+      'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+  };
   describe('GET', () => {
     it(`responds to a valid request with a 200 status code and an article object with author, title, article_id, body, topic, created_at, votes, and article_img_url properties`, () => {
       return request(app)
@@ -87,16 +97,7 @@ describe('/api/articles/:article_id', () => {
         .expect(200)
         .then(({ body }) => {
           const { article } = body;
-          expect(article).toMatchObject({
-            article_id: 2,
-            author: 'icellusedkars',
-            title: 'A',
-            topic: 'mitch',
-            created_at: '2020-10-18T01:00:00.000Z',
-            votes: 0,
-            article_img_url:
-              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-          });
+          expect(article).toMatchObject(articleObject);
         });
     });
     it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
@@ -115,6 +116,64 @@ describe('/api/articles/:article_id', () => {
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe('Article not found');
+        });
+    });
+  });
+  describe('PATCH', () => {
+    const votesInput = { inc_votes: 3 };
+    it(`responds to a valid request with a 201 status code and the article object with the vote count increased as specified`, () => {
+      return request(app)
+        .patch('/api/articles/2')
+        .send(votesInput)
+        .expect(201)
+        .then(({ body }) => {
+          const { updatedArticle } = body;
+          const expected = { ...articleObject };
+          expected.votes += 3;
+          expect(updatedArticle).toMatchObject(expected);
+        });
+    });
+    it(`responds to a valid request with a 201 status code and the article object with the vote count decreased as specified`, () => {
+      return request(app)
+        .patch('/api/articles/6')
+        .send({ inc_votes: -2 })
+        .expect(201)
+        .then(({ body }) => {
+          const { updatedArticle } = body;
+          expect(updatedArticle.votes).toBe(98);
+        });
+    });
+    it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
+      return request(app)
+        .patch('/api/articles/banana')
+        .send(votesInput)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid article ID');
+        });
+    });
+    it(`responds to an article_id with no database entry with a 404 status code and an error message 'Article not found`, () => {
+      return request(app)
+        .patch('/api/articles/9000')
+        .send(votesInput)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Article not found');
+        });
+    });
+    it(`responds to an invalid votes object with a 400 status code and an error message 'Invalid votes`, () => {
+      const invalidVotes = {
+        votes: '3',
+      };
+      return request(app)
+        .patch('/api/articles/2')
+        .send(invalidVotes)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Invalid votes');
         });
     });
   });
@@ -147,7 +206,6 @@ describe('/api/articles/:article_id/comments', () => {
         .expect(200)
         .then(({ body }) => {
           const { comments } = body;
-          console.log(comments);
           expect(comments).toBeSortedBy('created_at', { descending: true });
         });
     });
@@ -174,7 +232,6 @@ describe('/api/articles/:article_id/comments', () => {
         .get('/api/articles/2/comments')
         .expect(404)
         .then(({ body }) => {
-          console.log(body);
           const { msg } = body;
           expect(msg).toBe('Article has no comments');
         });
