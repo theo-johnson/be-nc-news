@@ -32,6 +32,12 @@ exports.handleCustom404Errors = (err, req, res, next) => {
   if (err === 'Article not found') {
     console.log(404, err);
     res.status(404).send({ msg: 'Article not found' });
+  } else if (err === 'Article not found') {
+    console.log(err);
+    res.status(404).send({ msg: 'Article not found' });
+  } else if (err === 'Article has no comments') {
+    console.log(err);
+    res.status(404).send({ msg: 'Article has no comments' });
   } else next(err);
 };
 
