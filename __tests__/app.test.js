@@ -177,7 +177,7 @@ describe('/api/articles/:article_id/comments', () => {
           expect(msg).toBe('Invalid comment');
         });
     });
-    it.only(`responds to a valid comment with a user not in database with a 404 status code and an error message 'Username not found`, () => {
+    it(`responds to a valid comment with a user not in database with a 404 status code and an error message 'Username not found`, () => {
       const invalidComment = {
         username: 'Tom',
         body: 'Great article!',
