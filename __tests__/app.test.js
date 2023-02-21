@@ -100,6 +100,16 @@ describe('/api/articles/:article_id/comments', () => {
           );
         });
     });
+    it(`responds to a valid request with a 200 status code and comments newest comments first`, () => {
+      return request(app)
+        .get('/api/articles/5/comments')
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          console.log(comments);
+          expect(comments).toBeSortedBy('created_at', { descending: true });
+        });
+    });
     it(`responds to an invalid article_id with a 400 status code and an error message 'Invalid article ID`, () => {
       return request(app)
         .get('/api/articles/banana/comments')
