@@ -76,7 +76,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves the comment with the specified comment_id",
+    "description": "serves an array of all comments on the article with the specified article_id",
     "queries": [],
     "exampleResponse": {
       "comment": {
