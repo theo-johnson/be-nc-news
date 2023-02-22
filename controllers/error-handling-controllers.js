@@ -21,7 +21,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 exports.handleInvalidPath404Errors = (req, res) => {
   console.log(404, 'Invalid path');
-  res.status(404).send({ msg: 'Not found' });
+  res.status(404).send({ msg: 'Invalid path' });
 };
 
 exports.handle500Errors = (err, req, res, next) => {

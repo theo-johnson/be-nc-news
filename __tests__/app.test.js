@@ -20,13 +20,13 @@ afterAll(() => {
 
 describe('/api/<INVALID PATH>', () => {
   describe('ANY METHOD', () => {
-    it('responds with a 404 status code and "Not found"', () => {
+    it('responds with a 404 status code and "Invalid path"', () => {
       return request(app)
         .get('/api/banana')
         .expect(404)
         .then(({ body }) => {
           const { msg } = body;
-          expect(msg).toBe('Not found');
+          expect(msg).toBe('Invalid path');
         });
     });
   });
