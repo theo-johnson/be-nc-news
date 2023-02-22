@@ -18,27 +18,22 @@ WHERE articles.topic = $1`;
 GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
 
   return db.query(articlesQueryString, queryValues).then(({ rows }) => {
-    if (!rows[0]) return Promise.reject('No articles found');
-    else {
-      rows.forEach((row) => (row.comment_count = +row.comment_count));
-      return rows;
-    }
+    rows.forEach((row) => (row.comment_count = +row.comment_count));
+    return rows;
   });
 };
 
 exports.fetchArticleComments = (article_id) => {
-  if (isNaN(article_id)) return Promise.reject('Invalid article ID');
   return db
     .query('SELECT * FROM articles WHERE article_id = $1', [article_id])
     .then(({ rows }) => {
-      if (!rows[0]) return Promise.reject('Article not found');
+      if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
       const articleCommentsQueryString = `
       SELECT * FROM comments WHERE article_id = $1 
       ORDER BY created_at DESC;`;
       return db.query(articleCommentsQueryString, [article_id]);
     })
     .then(({ rows }) => {
-      if (!rows[0]) return Promise.reject('Article has no comments');
       return rows;
     });
 };
@@ -51,7 +46,7 @@ FROM articles
 WHERE article_id = $1;`;
 
   return db.query(articleQueryString, [article_id]).then(({ rows }) => {
-    if (!rows[0]) return Promise.reject('Article not found');
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
     else return rows[0];
   });
 };
@@ -77,7 +72,7 @@ RETURNING *;`;
   return db
     .query(updateQueryString, [update.inc_votes, article_id])
     .then(({ rows }) => {
-      if (!rows[0]) return Promise.reject('Article not found');
+      if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
       else return rows[0];
     });
 };
