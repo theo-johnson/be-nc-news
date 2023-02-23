@@ -43,15 +43,19 @@ OFFSET $${queryCount}`;
   });
 };
 
-exports.fetchArticleComments = (article_id) => {
+exports.fetchArticleComments = (article_id, limit = 10, p = 1) => {
   return db
     .query('SELECT * FROM articles WHERE article_id = $1', [article_id])
     .then(({ rows }) => {
       if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
+
+      const offset = (p - 1) * limit;
       const articleCommentsQueryString = `
       SELECT * FROM comments WHERE article_id = $1 
-      ORDER BY created_at DESC;`;
-      return db.query(articleCommentsQueryString, [article_id]);
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3;`;
+
+      return db.query(articleCommentsQueryString, [article_id, limit, offset]);
     })
     .then(({ rows }) => {
       return rows;

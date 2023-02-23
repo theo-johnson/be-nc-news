@@ -507,13 +507,13 @@ describe('/api/articles/:article_id/comments', () => {
     });
   });
   describe('GET', () => {
-    it(`responds to a valid request with a 200 status code and an array of comment objects with comment_id, votes, created_at, author, body and article_id properties`, () => {
+    it(`responds to a valid request with a 200 status code and an array of 10 comment objects with comment_id, votes, created_at, author, body and article_id properties when ?limit query is not specified`, () => {
       return request(app)
-        .get('/api/articles/5/comments')
+        .get('/api/articles/1/comments')
         .expect(200)
         .then(({ body }) => {
           const { comments } = body;
-          expect(comments.length).toBe(2);
+          expect(comments.length).toBe(10);
           comments.forEach((comment) =>
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
@@ -521,7 +521,7 @@ describe('/api/articles/:article_id/comments', () => {
               body: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-              article_id: 5,
+              article_id: 1,
             })
           );
         });
@@ -552,6 +552,74 @@ describe('/api/articles/:article_id/comments', () => {
           const { msg } = body;
           expect(msg).toBe('Not found');
         });
+    });
+    describe('?limit query', () => {
+      it(`responds with a 200 status code and an array of x comment objects when ?limit query is x`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?limit=3')
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(3);
+          });
+      });
+      it(`responds with a 200 status code and an array of all article objects if ?limit is greater than the total number of comments`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?limit=20')
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(11);
+          });
+      });
+      it(`responds to an invalid ?limit query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?limit=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
+    });
+    describe('?p query', () => {
+      it(`responds with a 200 status code and an array of <limit> comment objects offset by x pages when ?p query is x,`, () => {
+        return request(app)
+          .get(
+            '/api/articles/1/comments?sort_by=comment_id&order=asc&limit=4&p=3'
+          )
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(3);
+            const expectedCommentIds = [3, 4, 9];
+            comments.forEach((comment, index) =>
+              expect(comment.comment_id).toBe(expectedCommentIds[index])
+            );
+          });
+      });
+      it(`responds with a 200 status code and an array of the first <limit> objects when ?p query is 0 or not supplied`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?sort_by=article_id&order=asc&limit=4')
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(4);
+            const expectedCommentIds = [5, 2, 18, 13];
+            comments.forEach((comment, index) =>
+              expect(comment.comment_id).toBe(expectedCommentIds[index])
+            );
+          });
+      });
+      it(`responds to an invalid ?p query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?p=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
     });
   });
 });
