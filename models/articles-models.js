@@ -158,3 +158,21 @@ RETURNING *;`;
     return;
   });
 };
+
+exports.fetchRandomArticle = () => {
+  const articleQueryString = `
+SELECT articles.article_id, articles.author, articles.topic, articles.title, 
+articles.body, articles.created_at, articles.votes, articles.article_img_url, 
+COUNT(comments.comment_id) AS comment_count
+FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id
+GROUP BY articles.article_id
+ORDER BY RANDOM() LIMIT 1;`;
+
+  return db.query(articleQueryString).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
+    else {
+      rows[0].comment_count = +rows[0].comment_count;
+      return rows[0];
+    }
+  });
+};
