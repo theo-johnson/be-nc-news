@@ -643,9 +643,7 @@ describe('/api/articles/:article_id/comments', () => {
     describe('?p query', () => {
       it(`responds with a 200 status code and an array of <limit> comment objects offset by x pages when ?p query is x,`, () => {
         return request(app)
-          .get(
-            '/api/articles/1/comments?sort_by=comment_id&order=asc&limit=4&p=3'
-          )
+          .get('/api/articles/1/comments?limit=4&p=3')
           .expect(200)
           .then(({ body }) => {
             const { comments } = body;
@@ -658,7 +656,7 @@ describe('/api/articles/:article_id/comments', () => {
       });
       it(`responds with a 200 status code and an array of the first <limit> objects when ?p query is 0 or not supplied`, () => {
         return request(app)
-          .get('/api/articles/1/comments?sort_by=article_id&order=asc&limit=4')
+          .get('/api/articles/1/comments?limit=4')
           .expect(200)
           .then(({ body }) => {
             const { comments } = body;
@@ -672,6 +670,27 @@ describe('/api/articles/:article_id/comments', () => {
       it(`responds to an invalid ?p query with a 400 status code and an error message 'Bad request`, () => {
         return request(app)
           .get('/api/articles/1/comments?p=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
+    });
+    describe('?order query', () => {
+      it(`responds with comments sorted in the specified order when ?order query is added`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?order=asc')
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(10);
+            expect(comments).toBeSortedBy('created_at', { descending: false });
+          });
+      });
+      it(`responds to an invalid ?order query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles/1/comments?order=banana')
           .expect(400)
           .then(({ body }) => {
             const { msg } = body;

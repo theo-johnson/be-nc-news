@@ -43,7 +43,12 @@ OFFSET $${queryCount}`;
   });
 };
 
-exports.fetchArticleComments = (article_id, limit = 10, p = 1) => {
+exports.fetchArticleComments = (
+  article_id,
+  order = 'DESC',
+  limit = 10,
+  p = 1
+) => {
   return db
     .query('SELECT * FROM articles WHERE article_id = $1', [article_id])
     .then(({ rows }) => {
@@ -52,7 +57,7 @@ exports.fetchArticleComments = (article_id, limit = 10, p = 1) => {
       const offset = (p - 1) * limit;
       const articleCommentsQueryString = `
       SELECT * FROM comments WHERE article_id = $1 
-      ORDER BY created_at DESC
+      ORDER BY created_at ${order}
       LIMIT $2 OFFSET $3;`;
 
       return db.query(articleCommentsQueryString, [article_id, limit, offset]);
