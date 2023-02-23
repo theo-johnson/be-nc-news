@@ -143,19 +143,13 @@ RETURNING *;`;
     });
 };
 
-//     const { article_id } = rows[0];
-//       const commentCountQueryString = `
-// SELECT articles.article_id, COUNT(comments.comment_id) AS comment_count
-// FROM articles
-// LEFT JOIN comments ON comments.article_id = articles.article_id
-// WHERE articles.article_id = $1
-// GROUP BY articles.article_id;`;
-//       return Promise.all([
-//         db.query(commentCountQueryString, [article_id]),
-//         rows[0],
-//       ]);
-//     })
-//     .then(([{ rows }, insertedArticle]) => {
-//       insertedArticle.comment_count = rows[0].comment_count;
-//       return insertedArticle;
-//     });
+exports.deleteArticleFromDb = (article_id) => {
+  const deleteArticleQueryString = `
+DELETE FROM articles
+WHERE article_id = $1
+RETURNING *;`;
+  return db.query(deleteArticleQueryString, [article_id]).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
+    return;
+  });
+};
