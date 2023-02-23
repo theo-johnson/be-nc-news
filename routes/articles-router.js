@@ -6,6 +6,7 @@ const {
   postComment,
   postArticle,
   deleteArticleById,
+  getRandomArticle,
 } = require('../controllers/articles-controllers');
 
 const articlesRouter = require('express').Router();
@@ -14,6 +15,8 @@ articlesRouter //
   .route('/')
   .get(getArticles)
   .post(postArticle);
+
+articlesRouter.get('/articles/random', getRandomArticle);
 
 articlesRouter
   .route('/:article_id')

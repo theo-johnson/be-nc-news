@@ -384,6 +384,26 @@ describe('/api/articles/:article_id', () => {
           expect(msg).toBe('Not found');
         });
     });
+    describe('article_id = random', () => {
+      it(`responds to a valid request to an article_id of random with a 200 status code and a random article object with author, title, article_id, body, topic, created_at, votes, and article_img_url properties`, () => {
+        return request(app)
+          .get('/api/articles/random')
+          .expect(200)
+          .then(({ body }) => {
+            const { randomArticle } = body;
+            expect(randomArticle).toMatchObject({
+              article_id: expect.any(Number),
+              author: expect.any(String),
+              title: expect.any(String),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+          });
+      });
+    });
   });
   describe('PATCH', () => {
     const votesInput = { inc_votes: 3 };

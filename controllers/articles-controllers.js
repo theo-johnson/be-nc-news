@@ -6,6 +6,7 @@ const {
   updateArticleById,
   insertArticle,
   deleteArticleFromDb,
+  fetchRandomArticle,
 } = require('../models/articles-models');
 
 exports.getArticles = (req, res, next) => {
@@ -56,14 +57,25 @@ exports.getArticleComments = (req, res, next) => {
 };
 
 exports.getArticleById = (req, res, next) => {
-  const article_id = +req.params.article_id;
-  fetchArticleById(article_id)
-    .then((article) => {
-      res.status(200).send({ article });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  let article_id = req.params.article_id;
+  if (article_id === 'random')
+    fetchRandomArticle()
+      .then((randomArticle) => {
+        res.status(200).send({ randomArticle });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  else {
+    article_id = +article_id;
+    fetchArticleById(article_id)
+      .then((article) => {
+        res.status(200).send({ article });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };
 
 exports.postComment = (req, res, next) => {
@@ -106,6 +118,16 @@ exports.deleteArticleById = (req, res, next) => {
   deleteArticleFromDb(article_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getRandomArticle = (req, res, next) => {
+  fetchRandomArticle()
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
