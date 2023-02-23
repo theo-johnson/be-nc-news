@@ -97,3 +97,41 @@ GROUP BY articles.article_id;`,
       return updatedArticle;
     });
 };
+
+exports.insertArticle = (article) => {
+  const {
+    title,
+    topic,
+    author,
+    body,
+    article_img_url = 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+  } = article;
+
+  const articleQueryString = `
+INSERT INTO articles (title, topic, author, body, article_img_url)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;`;
+  return db
+    .query(articleQueryString, [title, topic, author, body, article_img_url])
+    .then(({ rows }) => {
+      if (!rows[0]) return Promise.reject('Article not posted');
+      return { ...rows[0], comment_count: 0 };
+    });
+};
+
+//     const { article_id } = rows[0];
+//       const commentCountQueryString = `
+// SELECT articles.article_id, COUNT(comments.comment_id) AS comment_count
+// FROM articles
+// LEFT JOIN comments ON comments.article_id = articles.article_id
+// WHERE articles.article_id = $1
+// GROUP BY articles.article_id;`;
+//       return Promise.all([
+//         db.query(commentCountQueryString, [article_id]),
+//         rows[0],
+//       ]);
+//     })
+//     .then(([{ rows }, insertedArticle]) => {
+//       insertedArticle.comment_count = rows[0].comment_count;
+//       return insertedArticle;
+//     });
