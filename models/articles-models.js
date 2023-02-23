@@ -8,7 +8,7 @@ exports.fetchArticles = (topic, sort_by = 'created_at', order = 'desc') => {
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
 FROM articles
-FULL OUTER JOIN comments ON comments.article_id = articles.article_id`;
+LEFT JOIN comments ON comments.article_id = articles.article_id`;
   if (topic) {
     queryValues.push(topic);
     articlesQueryString += `
@@ -40,14 +40,19 @@ exports.fetchArticleComments = (article_id) => {
 
 exports.fetchArticleById = (article_id) => {
   const articleQueryString = `
-SELECT article_id, author, topic, title, body,
-created_at, votes, article_img_url
-FROM articles
-WHERE article_id = $1;`;
+SELECT articles.article_id, articles.author, articles.topic, articles.title, 
+articles.body, articles.created_at, articles.votes, articles.article_img_url, 
+COUNT(comments.comment_id) AS comment_count
+FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id
+WHERE articles.article_id = $1
+GROUP BY articles.article_id;`;
 
   return db.query(articleQueryString, [article_id]).then(({ rows }) => {
     if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
-    else return rows[0];
+    else {
+      rows[0].comment_count = +rows[0].comment_count;
+      return rows[0];
+    }
   });
 };
 
@@ -73,6 +78,22 @@ RETURNING *;`;
     .query(updateQueryString, [update.inc_votes, article_id])
     .then(({ rows }) => {
       if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
-      else return rows[0];
+      else
+        return Promise.all([
+          rows[0],
+          db.query(
+            `
+SELECT COUNT(comments.comment_id) AS comment_count
+FROM articles
+LEFT JOIN comments ON comments.article_id = articles.article_id
+WHERE articles.article_id = $1
+GROUP BY articles.article_id;`,
+            [article_id]
+          ),
+        ]);
+    })
+    .then(([updatedArticle, { rows }]) => {
+      updatedArticle.comment_count = +rows[0].comment_count;
+      return updatedArticle;
     });
 };
