@@ -403,7 +403,7 @@ describe('/api/articles/:article_id/comments', () => {
 
 describe('/api/users', () => {
   describe('GET', () => {
-    it.only('responds with an array of user objects, each with username, name and avatar_url properties', () => {
+    it('responds with an array of user objects, each with username, name and avatar_url properties', () => {
       return request(app)
         .get('/api/users')
         .expect(200)
