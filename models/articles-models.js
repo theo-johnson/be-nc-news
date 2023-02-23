@@ -5,7 +5,7 @@ exports.fetchArticles = () => {
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
 FROM articles
-FULL OUTER JOIN comments ON comments.article_id = articles.article_id
+LEFT JOIN comments ON comments.article_id = articles.article_id
 GROUP BY articles.article_id
 ORDER BY articles.created_at DESC;`;
   return db.query(articlesQueryString).then(({ rows }) => {
@@ -36,7 +36,7 @@ exports.fetchArticleById = (article_id) => {
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.body, articles.created_at, articles.votes, articles.article_img_url, 
 COUNT(comments.comment_id) AS comment_count
-FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id
+FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id
 WHERE articles.article_id = $1
 GROUP BY articles.article_id;`;
 
@@ -78,7 +78,7 @@ RETURNING *;`;
             `
 SELECT COUNT(comments.comment_id) AS comment_count
 FROM articles
-FULL OUTER JOIN comments ON comments.article_id = articles.article_id
+LEFT JOIN comments ON comments.article_id = articles.article_id
 WHERE articles.article_id = $1
 GROUP BY articles.article_id;`,
             [article_id]

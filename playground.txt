@@ -1,17 +1,6 @@
 You are now connected to database "nc_news_test" as user "theo".
- article_id | comment_count 
-------------+---------------
-          8 |             0
-          4 |             0
-         10 |             0
-         11 |             0
-          2 |             0
-          7 |             0
-         12 |             0
-          6 |             1
-          5 |             2
-          9 |             2
-          3 |             2
-          1 |            11
-(12 rows)
+ article_id |    author     | topic |                 title                  |   body    |     created_at      | votes |                                            article_img_url                                            | comment_count 
+------------+---------------+-------+----------------------------------------+-----------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------
+          1 | icellusedkars | mitch | Eight pug gifs that remind me of mitch | some gifs | 2020-11-03 09:12:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |            11
+(1 row)
 
