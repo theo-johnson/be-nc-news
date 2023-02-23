@@ -46,13 +46,13 @@ describe('/api/topics', () => {
 
 describe('/api/articles', () => {
   describe('GET', () => {
-    it(`responds with an array of article objects, each with author, title, article_id, topic, created_at, votes, article_img_url and comment_count properties`, () => {
+    it(`responds with an array of 10 article objects, each with author, title, article_id, topic, created_at, votes, article_img_url, comment_count and total_count properties when ?limit query is not specified`, () => {
       return request(app)
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles.length).toBe(12);
+          expect(articles.length).toBe(10);
           articles.forEach((article) => {
             expect(article).toMatchObject({
               article_id: expect.any(Number),
@@ -63,6 +63,7 @@ describe('/api/articles', () => {
               votes: expect.any(Number),
               article_img_url: expect.any(String),
               comment_count: expect.any(Number),
+              total_count: 12,
             });
           });
         });
@@ -85,137 +86,143 @@ describe('/api/articles', () => {
           expect(articles[0].comment_count).toBe(2);
         });
     });
-    it(`responds with articles with the specified topic when ?topic query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=cats')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(1);
-          expect(articles[0]).toMatchObject({
-            article_id: 5,
-            author: 'rogersop',
-            title: 'UNCOVERED: catspiracy to bring down democracy',
-            topic: 'cats',
-            created_at: '2020-08-03T13:14:00.000Z',
-            votes: 0,
-            article_img_url:
-              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-            comment_count: expect.any(Number),
+    describe('?topic query', () => {
+      it(`responds with articles with the specified topic when ?topic query is added`, () => {
+        return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(1);
+            expect(articles[0]).toMatchObject({
+              article_id: 5,
+              author: 'rogersop',
+              title: 'UNCOVERED: catspiracy to bring down democracy',
+              topic: 'cats',
+              created_at: '2020-08-03T13:14:00.000Z',
+              votes: 0,
+              article_img_url:
+                'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+              comment_count: expect.any(Number),
+            });
           });
-        });
+      });
     });
-    it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=mitch&sort_by=title')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(11);
-          expect(articles).toBeSortedBy('title', { descending: true });
-        });
-    });
-    it(`accounts for the different column naming conventions (articles.title vs comment_count) when ?sort_by query is added`, () => {
-      return request(app)
-        .get('/api/articles?sort_by=comment_count')
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles).toBeSortedBy('comment_count', { descending: true });
-        });
-    });
-    it(`responds with articles sorted in the specified order when ?order query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=mitch&sort_by=title&order=asc')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(11);
-          expect(articles).toBeSortedBy('title', { descending: false });
-        });
-    });
-    it(`responds to an invalid ?sort_by query with a 400 status code and an error message 'Bad request`, () => {
-      return request(app)
-        .get('/api/articles?sort_by=banana')
-        .expect(400)
-        .then(({ body }) => {
-          const { msg } = body;
-          expect(msg).toBe('Bad request');
-        });
-    });
-    it(`responds to an invalid ?order query with a 400 status code and an error message 'Bad request`, () => {
-      return request(app)
-        .get('/api/articles?order=banana')
-        .expect(400)
-        .then(({ body }) => {
-          const { msg } = body;
-          expect(msg).toBe('Bad request');
-        });
-    });
-    it(`responds with articles with the specified topic when ?topic query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=cats')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(1);
-          expect(articles[0]).toMatchObject({
-            article_id: 5,
-            author: 'rogersop',
-            title: 'UNCOVERED: catspiracy to bring down democracy',
-            topic: 'cats',
-            created_at: '2020-08-03T13:14:00.000Z',
-            votes: 0,
-            article_img_url:
-              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-            comment_count: expect.any(Number),
+    describe('?sort_by query', () => {
+      it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
+        return request(app)
+          .get('/api/articles?topic=mitch&sort_by=title')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(10);
+            expect(articles).toBeSortedBy('title', { descending: true });
           });
-        });
+      });
+      it(`accounts for the different column naming conventions (articles.title vs comment_count) when ?sort_by query is added`, () => {
+        return request(app)
+          .get('/api/articles?sort_by=comment_count')
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSortedBy('comment_count', {
+              descending: true,
+            });
+          });
+      });
+      it(`responds to an invalid ?sort_by query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles?sort_by=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
     });
-    it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=mitch&sort_by=title')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(11);
-          expect(articles).toBeSortedBy('title', { descending: true });
-        });
+    describe('?order query', () => {
+      it(`responds with articles sorted in the specified order when ?order query is added`, () => {
+        return request(app)
+          .get('/api/articles?topic=mitch&sort_by=title&order=asc')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(10);
+            expect(articles).toBeSortedBy('title', { descending: false });
+          });
+      });
+      it(`responds to an invalid ?order query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles?order=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
     });
-    it(`accounts for the different column naming conventions (articles.title vs comment_count) when ?sort_by query is added`, () => {
-      return request(app)
-        .get('/api/articles?sort_by=comment_count')
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles).toBeSortedBy('comment_count', { descending: true });
-        });
+    describe('?limit query', () => {
+      it(`responds with a 200 status code and an array of x article objects when ?limit query is x`, () => {
+        return request(app)
+          .get('/api/articles?limit=3')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(3);
+          });
+      });
+      it(`responds with a 200 status code and an array of all article objects if ?limit is greater than the total number of articles`, () => {
+        return request(app)
+          .get('/api/articles?limit=20')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(12);
+          });
+      });
+      it(`responds to an invalid ?limit query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles?limit=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
     });
-    it(`responds with articles sorted in the specified order when ?order query is added`, () => {
-      return request(app)
-        .get('/api/articles?topic=mitch&sort_by=title&order=asc')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(11);
-          expect(articles).toBeSortedBy('title', { descending: false });
-        });
-    });
-    it(`responds to an invalid ?sort_by query with a 400 status code and an error message 'Bad request`, () => {
-      return request(app)
-        .get('/api/articles?sort_by=banana')
-        .expect(400)
-        .then(({ body }) => {
-          const { msg } = body;
-          expect(msg).toBe('Bad request');
-        });
-    });
-    it(`responds to an invalid ?order query with a 400 status code and an error message 'Bad request`, () => {
-      return request(app)
-        .get('/api/articles?order=banana')
-        .expect(400)
-        .then(({ body }) => {
-          const { msg } = body;
-          expect(msg).toBe('Bad request');
-        });
+    describe('?p query', () => {
+      it(`responds with a 200 status code and an array of <limit> article objects offset by x pages when ?p query is x,`, () => {
+        return request(app)
+          .get('/api/articles?sort_by=article_id&order=asc&limit=4&p=3')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(4);
+            articles.forEach((article, index) =>
+              expect(article.article_id).toBe(index + 9)
+            );
+          });
+      });
+      it(`responds with a 200 status code and an array of the first <limit> objects when ?p query is 0 or not supplied`, () => {
+        return request(app)
+          .get('/api/articles?sort_by=article_id&order=asc&limit=4')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(4);
+            articles.forEach((article, index) =>
+              expect(article.article_id).toBe(index + 1)
+            );
+          });
+      });
+      it(`responds to an invalid ?p query with a 400 status code and an error message 'Bad request`, () => {
+        return request(app)
+          .get('/api/articles?p=banana')
+          .expect(400)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Bad request');
+          });
+      });
     });
   });
   describe('POST', () => {

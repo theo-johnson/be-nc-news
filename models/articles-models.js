@@ -1,24 +1,44 @@
 const db = require('../db/connection');
 
-exports.fetchArticles = (topic, sort_by = 'created_at', order = 'desc') => {
+exports.fetchArticles = (
+  topic,
+  sort_by = 'created_at',
+  order = 'DESC',
+  limit = 10,
+  p = 1
+) => {
   const queryValues = [];
+  let queryCount = 0;
   if (sort_by && sort_by !== 'comment_count') sort_by = `articles.${sort_by}`;
+  const offset = (p - 1) * limit;
 
   let articlesQueryString = `
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
-articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
+articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(articles.article_id) OVER() AS total_count
 FROM articles
 LEFT JOIN comments ON comments.article_id = articles.article_id`;
   if (topic) {
     queryValues.push(topic);
+    queryCount++;
     articlesQueryString += `
-WHERE articles.topic = $1`;
+WHERE articles.topic = $${queryCount}`;
   }
   articlesQueryString += `
-GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  queryValues.push(limit);
+  queryCount++;
+  articlesQueryString += `
+LIMIT $${queryCount}`;
+  queryValues.push(offset);
+  queryCount++;
+  articlesQueryString += `
+OFFSET $${queryCount}`;
 
   return db.query(articlesQueryString, queryValues).then(({ rows }) => {
-    rows.forEach((row) => (row.comment_count = +row.comment_count));
+    rows.forEach((row) => {
+      row.comment_count = +row.comment_count;
+      row.total_count = +row.total_count;
+    });
     return rows;
   });
 };
