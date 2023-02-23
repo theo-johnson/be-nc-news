@@ -15,6 +15,7 @@ const {
   handleInvalidPath404Errors,
   handle500Errors,
 } = require('./controllers/error-handling-controllers');
+const { patchCommentById } = require('./controllers/comments-controllers');
 
 const app = express();
 app.use(express.json());
@@ -30,6 +31,8 @@ app.post('/api/articles/:article_id/comments', postComment);
 
 app.get('/api/articles/:article_id', getArticleById);
 app.patch('/api/articles/:article_id', patchArticleById);
+
+app.patch('/api/comments/:comment_id', patchCommentById);
 
 app.all('*', handleInvalidPath404Errors);
 
