@@ -19,13 +19,12 @@ exports.getArticles = (req, res, next) => {
     'article_img_url',
     'comment_count',
   ];
-  if (sort_by && !validSortOptions.includes(sort_by)) {
-    next('Invalid sort_by column');
-  }
-
   const validOrderOptions = ['asc', 'desc'];
-  if (order && !validOrderOptions.includes(order)) {
-    next('Invalid sort order');
+  if (
+    (sort_by && !validSortOptions.includes(sort_by)) ||
+    (order && !validOrderOptions.includes(order))
+  ) {
+    next({ status: 400, msg: 'Bad request' });
   }
 
   fetchArticles(topic, sort_by, order)
@@ -76,7 +75,7 @@ exports.patchArticleById = (req, res, next) => {
   const update = req.body;
   updateArticleById(article_id, update)
     .then((updatedArticle) => {
-      res.status(201).send({ updatedArticle });
+      res.status(200).send({ updatedArticle });
     })
     .catch((err) => {
       next(err);

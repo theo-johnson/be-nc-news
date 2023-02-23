@@ -1,56 +1,30 @@
 exports.handlePSQL400Errors = (err, req, res, next) => {
-  if (err.code === '22P02') {
+  if (err.code === '22P02' || err.code === '23502') {
     console.log(400, err);
-    res.status(400).send({ msg: 'Invalid ID' });
-  } else if (err.code === '23502') {
-    console.log(400, err);
-    res.status(400).send({ msg: 'Invalid request body' });
+    res.status(400).send({ msg: 'Bad request' });
   } else next(err);
 };
 
 exports.handlePSQL404Errors = (err, req, res, next) => {
-  if (
-    err.code === '23503' &&
-    err.detail.endsWith('not present in table "users".')
-  ) {
+  if (err.code === '23503') {
     console.log(404, err);
-    res.status(404).send({ msg: 'Username not found' });
-  } else if (err.code === '23503') {
-    console.log(404, err);
-    res.status(404).send({ msg: 'Article not found' });
+    res.status(404).send({ msg: 'Not found' });
   } else next(err);
 };
 
-exports.handleCustom400Errors = (err, req, res, next) => {
-  if (err === 'Invalid ID') {
-    console.log(400, err);
-    res.status(400).send({ msg: 'Invalid ID' });
-  } else if (err === 'Invalid sort_by column') {
-    console.log(400, err);
-    res.status(400).send({ msg: 'Invalid sort_by column' });
-  } else if (err === 'Invalid sort order') {
-    console.log(400, err);
-    res.status(400).send({ msg: 'Invalid sort order' });
+exports.handleCustomErrors = (err, req, res, next) => {
+  if (err.status && err.msg) {
+    console.log(err.status, err.msg);
+    res.status(err.status).send({ msg: err.msg });
   } else next(err);
 };
 
-exports.handleCustom404Errors = (err, req, res, next) => {
-  if (err === 'Article not found') {
-    console.log(404, err);
-    res.status(404).send({ msg: 'Article not found' });
-  } else if (err === 'Comment not found') {
-    console.log(err);
-    res.status(404).send({ msg: 'Comment not found' });
-  } else if (err === 'Article has no comments') {
-    console.log(err);
-    res.status(404).send({ msg: 'Article has no comments' });
-  } else if (err === 'No articles found') {
-    console.log(err);
-    res.status(404).send({ msg: 'No articles found' });
-  } else next(err);
+exports.handleInvalidPath404Errors = (req, res) => {
+  console.log(404, 'Invalid path');
+  res.status(404).send({ msg: 'Invalid path' });
 };
 
-exports.handleCustom500Errors = (err, req, res, next) => {
+exports.handle500Errors = (err, req, res, next) => {
   console.log(500, err);
   res.status(500).send({ msg: 'Internal server error' });
 };

@@ -12,9 +12,9 @@ const {
 const {
   handlePSQL400Errors,
   handlePSQL404Errors,
-  handleCustom500Errors,
-  handleCustom400Errors,
-  handleCustom404Errors,
+  handleCustomErrors,
+  handleInvalidPath404Errors,
+  handle500Errors,
 } = require('./controllers/error-handling-controllers');
 
 const app = express();
@@ -32,10 +32,11 @@ app.delete('/api/comments/:comment_id', deleteCommentById);
 app.get('/api/articles/:article_id', getArticleById);
 app.patch('/api/articles/:article_id', patchArticleById);
 
+app.all('*', handleInvalidPath404Errors);
+
 app.use(handlePSQL400Errors);
 app.use(handlePSQL404Errors);
-app.use(handleCustom400Errors);
-app.use(handleCustom404Errors);
-app.use(handleCustom500Errors);
+app.use(handleCustomErrors);
+app.use(handle500Errors);
 
 module.exports = app;

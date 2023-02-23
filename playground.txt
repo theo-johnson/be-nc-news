@@ -3,5 +3,20 @@ You are now connected to database "nc_news_test" as user "theo".
 ------------+------------------------------------------------------------------------------------------------------------------------------------+------------+---------------+-------+---------------------
           2 | The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky. |          1 | butter_bridge |    14 | 2020-10-31 03:03:00
 (1 row)
+ article_id |    author     | topic |                         title                          |     created_at      | votes |                                            article_img_url                                            | comment_count 
+------------+---------------+-------+--------------------------------------------------------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------
+          3 | icellusedkars | mitch | Eight pug gifs that remind me of mitch                 | 2020-11-03 09:12:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2
+          6 | icellusedkars | mitch | A                                                      | 2020-10-18 02:00:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             1
+          2 | icellusedkars | mitch | Sony Vaio; or, The Laptop                              | 2020-10-16 06:03:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+         12 | butter_bridge | mitch | Moustache                                              | 2020-10-11 12:24:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+          5 | rogersop      | cats  | UNCOVERED: catspiracy to bring down democracy          | 2020-08-03 14:14:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2
+          1 | butter_bridge | mitch | Living in the shadow of a great man                    | 2020-07-09 21:11:00 |   100 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |            11
+          9 | butter_bridge | mitch | They're not exactly dogs, are they?                    | 2020-06-06 10:10:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2
+         10 | rogersop      | mitch | Seven inspirational thought leaders from Manchester UK | 2020-05-14 05:15:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+          4 | rogersop      | mitch | Student SUES Mitch!                                    | 2020-05-06 02:14:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+          8 | icellusedkars | mitch | Does Mitch predate civilisation?                       | 2020-04-17 02:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+         11 | icellusedkars | mitch | Am I a cat?                                            | 2020-01-15 22:21:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+          7 | icellusedkars | mitch | Z                                                      | 2020-01-07 14:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0
+(12 rows)
 
 DELETE 1
