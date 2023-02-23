@@ -492,6 +492,70 @@ describe('/api/comments/:comment_id', () => {
         });
     });
   });
+  describe('PATCH', () => {
+    const votesInput = { inc_votes: 3 };
+    it(`responds to a valid request with a 200 status code and the comment object with the vote count increased as specified`, () => {
+      return request(app)
+        .patch('/api/comments/2')
+        .send(votesInput)
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedComment } = body;
+          const expected = {
+            comment_id: 2,
+            body: 'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+            author: 'butter_bridge',
+            votes: 14,
+            created_at: '2020-10-31T03:03:00.000Z',
+          };
+          expected.votes += 3;
+          expect(updatedComment).toMatchObject(expected);
+        });
+    });
+    it(`responds to a valid request with a 200 status code and the comment object with the vote count decreased as specified`, () => {
+      return request(app)
+        .patch('/api/comments/2')
+        .send({ inc_votes: -2 })
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedComment } = body;
+          expect(updatedComment.votes).toBe(12);
+        });
+    });
+    it(`responds to an invalid article_id with a 400 status code and an error message 'Bad request`, () => {
+      return request(app)
+        .patch('/api/comments/banana')
+        .send(votesInput)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+    it(`responds to an article_id with no database entry with a 404 status code and an error message 'Not found`, () => {
+      return request(app)
+        .patch('/api/comments/9000')
+        .send(votesInput)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Not found');
+        });
+    });
+    it(`responds to an invalid votes object with a 400 status code and an error message 'Bad request`, () => {
+      const invalidVotes = {
+        votes: 'three',
+      };
+      return request(app)
+        .patch('/api/comments/2')
+        .send(invalidVotes)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+  });
 });
 
 describe('/api/users', () => {
