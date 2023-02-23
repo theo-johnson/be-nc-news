@@ -42,6 +42,36 @@ describe('/api/topics', () => {
         });
     });
   });
+  describe('POST', () => {
+    const topic = {
+      slug: 'nephology',
+      description: 'The study of clouds!',
+    };
+    it(`responds to a valid request with a 201 status code and the topic object that was successfully added`, () => {
+      return request(app)
+        .post('/api/topics')
+        .send(topic)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedTopic } = body;
+          expect(postedTopic).toEqual(topic);
+        });
+    });
+    it(`responds to an invalid topic object with a 400 status code and an error message 'Bad request`, () => {
+      const invalidTopic = {
+        topic: 'Tom',
+        content: 3,
+      };
+      return request(app)
+        .post('/api/topics')
+        .send(invalidTopic)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+  });
 });
 
 describe('/api/articles', () => {
