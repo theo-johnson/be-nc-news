@@ -1,13 +1,4 @@
 const express = require('express');
-const { getTopics } = require('./controllers/topics-controllers');
-const { getUsers } = require('./controllers/users-controllers');
-const {
-  getArticles,
-  getArticleComments,
-  getArticleById,
-  patchArticleById,
-  postComment,
-} = require('./controllers/articles-controllers');
 const {
   handlePSQL400Errors,
   handlePSQL404Errors,
@@ -17,20 +8,12 @@ const {
 } = require('./controllers/error-handling-controllers');
 const { patchCommentById } = require('./controllers/comments-controllers');
 
+const apiRouter = require('./routes/api-router');
+
 const app = express();
 app.use(express.json());
 
-app.get('/api/topics', getTopics);
-
-app.get('/api/users', getUsers);
-
-app.get('/api/articles', getArticles);
-
-app.get('/api/articles/:article_id/comments', getArticleComments);
-app.post('/api/articles/:article_id/comments', postComment);
-
-app.get('/api/articles/:article_id', getArticleById);
-app.patch('/api/articles/:article_id', patchArticleById);
+app.use('/api', apiRouter);
 
 app.patch('/api/comments/:comment_id', patchCommentById);
 
