@@ -8,7 +8,6 @@ const {
   topicData,
   userData,
 } = require('../db/data/test-data/index');
-const { post } = require('../app');
 
 beforeEach(() => {
   return seed({ articleData, commentData, topicData, userData });
@@ -216,6 +215,93 @@ describe('/api/articles', () => {
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe('Bad request');
+        });
+    });
+  });
+  describe('POST', () => {
+    const article = {
+      author: 'butter_bridge',
+      title: 'The wonderful world of paper',
+      topic: 'paper',
+      body: 'Paper. We know it. We use it. But do we love it? In this essay I will explore...',
+    };
+    it(`responds to a valid request with a 201 status code and the article object that was successfully added, with database specific properties added`, () => {
+      const articleWithURL = {
+        ...article,
+        article_img_url:
+          'https://https://images.unsplash.com/photo-1520004434532-668416a08753',
+      };
+      return request(app)
+        .post('/api/articles')
+        .send(articleWithURL)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedArticle } = body;
+          expect(postedArticle).toMatchObject({
+            ...articleWithURL,
+            article_id: 13,
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+    it(`responds to a valid request without an article_img_url with a 201 status code and the article object that was successfully added, with database specific properties added and article_img_url set to default`, () => {
+      return request(app)
+        .post('/api/articles')
+        .send(article)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedArticle } = body;
+          expect(postedArticle).toEqual({
+            ...article,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            article_id: 13,
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+    it(`responds to an invalid article object with a 400 status code and an error message 'Bad request`, () => {
+      const invalidArticle = {
+        prop: 'banana',
+        content: 3,
+      };
+      return request(app)
+        .post('/api/articles')
+        .send(invalidArticle)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+    it(`responds to a valid comment with a user not in database with a 404 status code and an error message 'Not found`, () => {
+      const articleWithInvalidUser = { ...article };
+      articleWithInvalidUser.author = 'banana';
+
+      return request(app)
+        .post('/api/articles')
+        .send(articleWithInvalidUser)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Not found');
+        });
+    });
+    it(`responds to a valid comment with a topic not in database with a 404 status code and an error message 'Not found`, () => {
+      const articleWithInvalidTopic = { ...article };
+      articleWithInvalidTopic.topic = 'banana';
+
+      return request(app)
+        .post('/api/articles')
+        .send(articleWithInvalidTopic)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Not found');
         });
     });
   });

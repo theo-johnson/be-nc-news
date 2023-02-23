@@ -6,7 +6,6 @@ const {
   handleInvalidPath404Errors,
   handle500Errors,
 } = require('./controllers/error-handling-controllers');
-const { patchCommentById } = require('./controllers/comments-controllers');
 
 const apiRouter = require('./routes/api-router');
 
@@ -14,9 +13,6 @@ const app = express();
 app.use(express.json());
 
 app.use('/api', apiRouter);
-
-app.patch('/api/comments/:comment_id', patchCommentById);
-
 app.all('*', handleInvalidPath404Errors);
 
 app.use(handlePSQL400Errors);
