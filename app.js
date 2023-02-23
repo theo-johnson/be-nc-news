@@ -2,6 +2,7 @@ const express = require('express');
 const { getTopics } = require('./controllers/topics-controllers');
 const { getUsers } = require('./controllers/users-controllers');
 const { deleteCommentById } = require('./controllers/comments-controllers');
+const { getEndpoints } = require('./controllers/endpoints-controllers');
 const {
   getArticles,
   getArticleComments,
@@ -20,6 +21,7 @@ const {
 const app = express();
 app.use(express.json());
 
+app.get('/api', getEndpoints);
 app.get('/api/topics', getTopics);
 app.get('/api/users', getUsers);
 app.get('/api/articles', getArticles);

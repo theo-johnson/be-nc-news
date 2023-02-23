@@ -514,3 +514,22 @@ describe('/api/users', () => {
     });
   });
 });
+
+describe('/api', () => {
+  describe('GET', () => {
+    it('responds with an object with properties describing each endpoint', () => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+          const { endpoints } = body;
+          expect(Object.keys(endpoints).length).toBe(8);
+          Object.values(endpoints).forEach((endpoint) => {
+            expect(endpoint).toMatchObject({
+              description: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+});
