@@ -1,17 +1,10 @@
 You are now connected to database "nc_news_test" as user "theo".
- article_id | title | topic |    author     | body |         created_at         | votes | article_img_url 
-------------+-------+-------+---------------+------+----------------------------+-------+-----------------
-         14 | titl  | paper | butter_bridge | bod  | 2023-02-23 13:41:49.136936 |     0 | http://url
-(1 row)
-
-INSERT 0 1
- article_id | comment_count 
-------------+---------------
-         14 |             0
-(1 row)
-
- article_id | title | topic |    author     | body |         created_at         | votes | article_img_url 
-------------+-------+-------+---------------+------+----------------------------+-------+-----------------
-         14 | titl  | paper | butter_bridge | bod  | 2023-02-23 13:41:49.136936 |     0 | http://url
-(1 row)
+ article_id |    author     | topic |                         title                          |     created_at      | votes |                                            article_img_url                                            | comment_count | total_count 
+------------+---------------+-------+--------------------------------------------------------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------+-------------
+          6 | icellusedkars | mitch | A                                                      | 2020-10-18 02:00:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             1 |          12
+          7 | icellusedkars | mitch | Z                                                      | 2020-01-07 14:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |          12
+          8 | icellusedkars | mitch | Does Mitch predate civilisation?                       | 2020-04-17 02:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |          12
+          9 | butter_bridge | mitch | They're not exactly dogs, are they?                    | 2020-06-06 10:10:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2 |          12
+         10 | rogersop      | mitch | Seven inspirational thought leaders from Manchester UK | 2020-05-14 05:15:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |          12
+(5 rows)
 

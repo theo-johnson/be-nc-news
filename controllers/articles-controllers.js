@@ -8,7 +8,7 @@ const {
 } = require('../models/articles-models');
 
 exports.getArticles = (req, res, next) => {
-  let { topic, sort_by, order } = req.query;
+  let { topic, sort_by, order, limit, p } = req.query;
 
   const validSortOptions = [
     'article_id',
@@ -28,7 +28,7 @@ exports.getArticles = (req, res, next) => {
     next({ status: 400, msg: 'Bad request' });
   }
 
-  fetchArticles(topic, sort_by, order)
+  fetchArticles(topic, sort_by, order, limit, p)
     .then((articles) => {
       res.status(200).send({ articles });
     })
