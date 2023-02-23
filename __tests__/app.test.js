@@ -421,3 +421,30 @@ describe('/api/users', () => {
     });
   });
 });
+
+describe('/api/users/:username', () => {
+  describe('GET', () => {
+    it('responds with a user object with username, name and avatar_url properties', () => {
+      return request(app)
+        .get('/api/users/lurker')
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toMatchObject({
+            username: 'lurker',
+            name: 'do_nothing',
+            avatar_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+          });
+        });
+    });
+    it('responds with a 404 status code and "Not found" when no user with the specified username exists in the database', () => {
+      return request(app)
+        .get('/api/users/banana')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('Not found');
+        });
+    });
+  });
+});
