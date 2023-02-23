@@ -463,6 +463,37 @@ describe('/api/articles/:article_id/comments', () => {
   });
 });
 
+describe('/api/comments/:comment_id', () => {
+  describe('DELETE', () => {
+    it(`responds to a valid request with a 204 status code and successfully deletes the comment from the database`, () => {
+      return request(app)
+        .delete('/api/comments/2')
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    it(`responds to an invalid comment_id with a 400 status code and an error message 'Bad request`, () => {
+      return request(app)
+        .delete('/api/comments/banana')
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+    it(`responds to a comment_id with no database entry with a 404 status code and an error message 'Not found`, () => {
+      return request(app)
+        .delete('/api/comments/9000')
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Not found');
+        });
+    });
+  });
+});
+
 describe('/api/users', () => {
   describe('GET', () => {
     it('responds with an array of user objects, each with username, name and avatar_url properties', () => {
