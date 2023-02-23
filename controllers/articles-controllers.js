@@ -23,8 +23,8 @@ exports.getArticles = (req, res, next) => {
   ];
   const validOrderOptions = ['asc', 'desc'];
   if (
-    (sort_by && !validSortOptions.includes(sort_by)) ||
-    (order && !validOrderOptions.includes(order))
+    (sort_by && !validSortOptions.includes(sort_by.toLowerCase())) ||
+    (order && !validOrderOptions.includes(order.toLowerCase()))
   ) {
     next({ status: 400, msg: 'Bad request' });
   }
@@ -39,9 +39,14 @@ exports.getArticles = (req, res, next) => {
 };
 
 exports.getArticleComments = (req, res, next) => {
-  let { limit, p } = req.query;
+  let { order, limit, p } = req.query;
   const article_id = +req.params.article_id;
-  fetchArticleComments(article_id, limit, p)
+
+  const validOrderOptions = ['asc', 'desc'];
+  if (order && !validOrderOptions.includes(order.toLowerCase()))
+    next({ status: 400, msg: 'Bad request' });
+
+  fetchArticleComments(article_id, order, limit, p)
     .then((comments) => {
       res.status(200).send({ comments });
     })
