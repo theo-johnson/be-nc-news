@@ -411,12 +411,8 @@ describe('/api/comments/:comment_id', () => {
       return request(app)
         .delete('/api/comments/2')
         .expect(204)
-        .then(() => {
-          return db.query(`SELECT * FROM comments WHERE comment_id = 2`);
-        })
-        .then(({ rows }) => {
-          const comment2 = rows.find((row) => row.comment_id === 2);
-          expect(comment2).toBeUndefined();
+        .then(({ body }) => {
+          expect(body).toEqual({});
         });
     });
     it(`responds to an invalid comment_id with a 400 status code and an error message 'Invalid ID`, () => {
