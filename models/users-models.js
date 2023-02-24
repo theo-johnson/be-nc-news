@@ -8,7 +8,7 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchUserById = (username) => {
+exports.fetchUserByUsername = (username) => {
   const usersQueryString = `
     SELECT * FROM users WHERE username = $1`;
   return db.query(usersQueryString, [username]).then(({ rows }) => {
@@ -27,4 +27,15 @@ RETURNING *;`;
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.deleteUserFromDb = (username) => {
+  const deleteUserQueryString = `
+DELETE FROM users
+WHERE username = $1
+RETURNING *;`;
+  return db.query(deleteUserQueryString, [username]).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
+    return;
+  });
 };

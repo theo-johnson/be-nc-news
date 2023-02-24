@@ -1,7 +1,8 @@
 const {
   fetchUsers,
-  fetchUserById,
+  fetchUserByUsername,
   insertUser,
+  deleteUserFromDb,
 } = require('../models/users-models');
 
 exports.getUsers = (req, res, next) => {
@@ -14,9 +15,9 @@ exports.getUsers = (req, res, next) => {
     });
 };
 
-exports.getUserById = (req, res, next) => {
+exports.getUserByUsername = (req, res, next) => {
   const { username } = req.params;
-  fetchUserById(username)
+  fetchUserByUsername(username)
     .then((user) => {
       res.status(200).send({ user });
     })
@@ -30,6 +31,17 @@ exports.postUser = (req, res, next) => {
   insertUser(username, name, avatar_url)
     .then((postedUser) => {
       res.status(201).send({ postedUser });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  deleteUserFromDb(username)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);
