@@ -16,3 +16,15 @@ exports.fetchUserById = (username) => {
     return rows[0];
   });
 };
+
+exports.insertUser = (username, name, avatar_url) => {
+  const userQueryString = `
+INSERT INTO users (username, name, avatar_url)
+VALUES ($1, $2, $3)
+RETURNING *;`;
+  return db
+    .query(userQueryString, [username, name, avatar_url])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

@@ -925,6 +925,38 @@ describe('/api/users', () => {
         });
     });
   });
+  describe('POST', () => {
+    const user = {
+      username: 'jmbo303',
+      name: 'Jimbob',
+      avatar_url:
+        'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+    };
+    it(`responds to a valid request with a 201 status code and the user object that was successfully added`, () => {
+      return request(app)
+        .post('/api/users')
+        .send(user)
+        .expect(201)
+        .then(({ body }) => {
+          const { postedUser } = body;
+          expect(postedUser).toEqual(user);
+        });
+    });
+    it(`responds to an invalid user object with a 400 status code and an error message 'Bad request`, () => {
+      const invalidUser = {
+        user: 'Tom',
+        content: 3,
+      };
+      return request(app)
+        .post('/api/users')
+        .send(invalidUser)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Bad request');
+        });
+    });
+  });
 });
 
 describe('/api/users/:username', () => {
