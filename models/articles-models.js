@@ -35,6 +35,7 @@ LIMIT $${queryCount}`;
 OFFSET $${queryCount}`;
 
   return db.query(articlesQueryString, queryValues).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
     rows.forEach((row) => {
       row.comment_count = +row.comment_count;
       row.total_count = +row.total_count;
@@ -159,16 +160,23 @@ RETURNING *;`;
   });
 };
 
-exports.fetchRandomArticle = () => {
-  const articleQueryString = `
+exports.fetchRandomArticle = (topic) => {
+  const queryValues = [];
+  let articleQueryString = `
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.body, articles.created_at, articles.votes, articles.article_img_url, 
 COUNT(comments.comment_id) AS comment_count
-FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id
+FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+  if (topic) {
+    queryValues.push(topic);
+    articleQueryString += `
+WHERE articles.topic = $1`;
+  }
+  articleQueryString += `
 GROUP BY articles.article_id
 ORDER BY RANDOM() LIMIT 1;`;
 
-  return db.query(articleQueryString).then(({ rows }) => {
+  return db.query(articleQueryString, queryValues).then(({ rows }) => {
     if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
     else {
       rows[0].comment_count = +rows[0].comment_count;
