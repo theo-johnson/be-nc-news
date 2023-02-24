@@ -1,4 +1,8 @@
-const { fetchTopics, insertTopic } = require('../models/topics-models');
+const {
+  fetchTopics,
+  insertTopic,
+  deleteTopicFromDb,
+} = require('../models/topics-models');
 
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -15,6 +19,17 @@ exports.postTopic = (req, res, next) => {
   insertTopic(slug, description)
     .then((postedTopic) => {
       res.status(201).send({ postedTopic });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteTopicBySlug = (req, res, next) => {
+  const { slug } = req.params;
+  deleteTopicFromDb(slug)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);

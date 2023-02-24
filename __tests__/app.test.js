@@ -72,6 +72,25 @@ describe('/api/topics', () => {
         });
     });
   });
+  describe('DELETE', () => {
+    it(`responds to a valid request with a 204 status code and successfully deletes the topic from the database`, () => {
+      return request(app)
+        .delete('/api/topics/cats')
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    it(`responds to a topic with no database entry with a 404 status code and an error message 'Not found`, () => {
+      return request(app)
+        .delete('/api/topics/9000')
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe('Not found');
+        });
+    });
+  });
 });
 
 describe('/api/articles', () => {

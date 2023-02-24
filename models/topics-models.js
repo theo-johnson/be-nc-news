@@ -17,3 +17,14 @@ RETURNING *;`;
     return rows[0];
   });
 };
+
+exports.deleteTopicFromDb = (slug) => {
+  const deleteTopicQueryString = `
+DELETE FROM topics
+WHERE slug = $1
+RETURNING *;`;
+  return db.query(deleteTopicQueryString, [slug]).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
+    return;
+  });
+};
