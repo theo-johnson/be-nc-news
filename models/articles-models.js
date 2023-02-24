@@ -108,12 +108,31 @@ RETURNING *;`;
     });
 };
 
-exports.updateArticleById = (article_id, update) => {
-  const updateQueryString = `
-UPDATE articles SET votes = votes + $1 WHERE article_id = $2
-RETURNING *;`;
+exports.updateArticleById = (article_id, inc_votes, article_img_url) => {
+  const updateValues = [];
+  let updateCount = 0;
+  let updateQueryString = `
+UPDATE articles SET`;
+  if (inc_votes) {
+    updateValues.push(inc_votes);
+    updateCount++;
+    updateQueryString += `
+votes = votes + $${updateCount}`;
+  }
+  if (article_img_url) {
+    if (inc_votes) updateQueryString += `,`;
+    updateValues.push(article_img_url);
+    updateCount++;
+    updateQueryString += `
+article_img_url = $${updateCount}`;
+  }
+  updateValues.push(article_id);
+  updateCount++;
+  updateQueryString += `
+WHERE article_id = $${updateCount} RETURNING *;`;
+
   return db
-    .query(updateQueryString, [update.inc_votes, article_id])
+    .query(updateQueryString, updateValues)
     .then(({ rows }) => {
       if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
       else

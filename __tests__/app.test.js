@@ -478,7 +478,7 @@ describe('/api/articles/:article_id', () => {
   });
   describe('PATCH', () => {
     const votesInput = { inc_votes: 3 };
-    it(`responds to a valid request with a 200 status code and the article object with the vote count increased as specified`, () => {
+    it(`responds to a valid request body with an inc_votes property with a 200 status code and the article object with the vote count increased as specified`, () => {
       return request(app)
         .patch('/api/articles/2')
         .send(votesInput)
@@ -490,7 +490,7 @@ describe('/api/articles/:article_id', () => {
           expect(updatedArticle).toMatchObject(expected);
         });
     });
-    it(`responds to a valid request with a 200 status code and the article object with the vote count decreased as specified`, () => {
+    it(`responds to a valid request with a negative inc_votes property with a 200 status code and the article object with the vote count decreased as specified`, () => {
       return request(app)
         .patch('/api/articles/1')
         .send({ inc_votes: -2 })
@@ -498,6 +498,25 @@ describe('/api/articles/:article_id', () => {
         .then(({ body }) => {
           const { updatedArticle } = body;
           expect(updatedArticle.votes).toBe(98);
+        });
+    });
+    it(`responds to a valid request with inc_votes and article_img_url properties with a 200 status code and the article object with the vote count incremented as specified, and the article_img_url updated`, () => {
+      const imgURLInput = {
+        inc_votes: 2,
+        article_img_url:
+          'https://images.unsplash.com/photo-1520004434532-668416a08753',
+      };
+      return request(app)
+        .patch('/api/articles/2')
+        .send(imgURLInput)
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedArticle } = body;
+          const expected = { ...articleObject };
+          expected.votes += 2;
+          expected.article_img_url =
+            'https://images.unsplash.com/photo-1520004434532-668416a08753';
+          expect(updatedArticle).toMatchObject(expected);
         });
     });
     it(`responds to an invalid article_id with a 400 status code and an error message 'Bad request`, () => {
@@ -520,9 +539,9 @@ describe('/api/articles/:article_id', () => {
           expect(msg).toBe('Not found');
         });
     });
-    it(`responds to an invalid votes object with a 400 status code and an error message 'Bad request`, () => {
+    it(`responds to an invalid request body object with a 400 status code and an error message 'Bad request`, () => {
       const invalidVotes = {
-        votes: '3',
+        inc_votes: 'test',
       };
       return request(app)
         .patch('/api/articles/2')
