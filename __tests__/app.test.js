@@ -137,6 +137,15 @@ describe('/api/articles', () => {
             });
           });
       });
+      it(`responds to a ?topic query with a topic not in database with a 404 status code and an error message 'Not found`, () => {
+        return request(app)
+          .get('/api/articles?topic=banana')
+          .expect(404)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Not found');
+          });
+      });
     });
     describe('?sort_by query', () => {
       it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
@@ -390,8 +399,8 @@ describe('/api/articles/:article_id', () => {
           .get('/api/articles/random')
           .expect(200)
           .then(({ body }) => {
-            const { randomArticle } = body;
-            expect(randomArticle).toMatchObject({
+            const { article } = body;
+            expect(article).toMatchObject({
               article_id: expect.any(Number),
               author: expect.any(String),
               title: expect.any(String),
@@ -402,6 +411,35 @@ describe('/api/articles/:article_id', () => {
               comment_count: expect.any(Number),
             });
           });
+      });
+      describe('?topic query', () => {
+        it(`responds with a random article with the specified topic when ?topic query is added`, () => {
+          return request(app)
+            .get('/api/articles/random?topic=cats')
+            .expect(200)
+            .then(({ body }) => {
+              const { article } = body;
+              expect(article).toMatchObject({
+                article_id: expect.any(Number),
+                author: expect.any(String),
+                title: expect.any(String),
+                topic: 'cats',
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+              });
+            });
+        });
+        it(`responds to a ?topic query with a topic not in database with a 404 status code and an error message 'Not found`, () => {
+          return request(app)
+            .get('/api/articles/random?topic=banana')
+            .expect(404)
+            .then(({ body }) => {
+              const { msg } = body;
+              expect(msg).toBe('Not found');
+            });
+        });
       });
     });
   });

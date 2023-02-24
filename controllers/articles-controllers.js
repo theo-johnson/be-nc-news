@@ -58,15 +58,17 @@ exports.getArticleComments = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   let article_id = req.params.article_id;
-  if (article_id === 'random')
-    fetchRandomArticle()
-      .then((randomArticle) => {
-        res.status(200).send({ randomArticle });
+
+  if (article_id === 'random') {
+    const { topic } = req.query;
+    fetchRandomArticle(topic)
+      .then((article) => {
+        res.status(200).send({ article });
       })
       .catch((err) => {
         next(err);
       });
-  else {
+  } else {
     article_id = +article_id;
     fetchArticleById(article_id)
       .then((article) => {
