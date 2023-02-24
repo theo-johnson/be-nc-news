@@ -1,6 +1,11 @@
 You are now connected to database "nc_news_test" as user "theo".
- article_id |    author     | topic |                 title                  |   body    |     created_at      | votes |                                            article_img_url                                            | comment_count 
-------------+---------------+-------+----------------------------------------+-----------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------
-          3 | icellusedkars | mitch | Eight pug gifs that remind me of mitch | some gifs | 2020-11-03 09:12:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2
-(1 row)
+ article_id |    author     | topic |                 title                  |     created_at      | votes |                                            article_img_url                                            | comment_count | total_count 
+------------+---------------+-------+----------------------------------------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------+-------------
+          3 | icellusedkars | mitch | Eight pug gifs that remind me of mitch | 2020-11-03 09:12:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2 |           6
+          6 | icellusedkars | mitch | A                                      | 2020-10-18 02:00:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             1 |           6
+          2 | icellusedkars | mitch | Sony Vaio; or, The Laptop              | 2020-10-16 06:03:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |           6
+          8 | icellusedkars | mitch | Does Mitch predate civilisation?       | 2020-04-17 02:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |           6
+         11 | icellusedkars | mitch | Am I a cat?                            | 2020-01-15 22:21:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |           6
+          7 | icellusedkars | mitch | Z                                      | 2020-01-07 14:08:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             0 |           6
+(6 rows)
 

@@ -147,6 +147,39 @@ describe('/api/articles', () => {
           });
       });
     });
+    describe('?author query', () => {
+      it(`responds with articles with the specified author when ?author query is added`, () => {
+        return request(app)
+          .get('/api/articles?author=icellusedkars')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(6);
+            articles.forEach((article) => {
+              expect(article).toMatchObject({
+                article_id: expect.any(Number),
+                author: 'icellusedkars',
+                title: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+                total_count: 6,
+              });
+            });
+          });
+      });
+      it(`responds to an ?author query with an author not in database with a 404 status code and an error message 'Not found`, () => {
+        return request(app)
+          .get('/api/articles?author=banana')
+          .expect(404)
+          .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe('Not found');
+          });
+      });
+    });
     describe('?sort_by query', () => {
       it(`responds with articles sorted by the specified column when ?sort_by query is added`, () => {
         return request(app)

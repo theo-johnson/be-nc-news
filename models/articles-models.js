@@ -2,6 +2,7 @@ const db = require('../db/connection');
 
 exports.fetchArticles = (
   topic,
+  author,
   sort_by = 'created_at',
   order = 'DESC',
   limit = 10,
@@ -22,6 +23,13 @@ LEFT JOIN comments ON comments.article_id = articles.article_id`;
     queryCount++;
     articlesQueryString += `
 WHERE articles.topic = $${queryCount}`;
+  }
+  if (author) {
+    queryValues.push(author);
+    queryCount++;
+    articlesQueryString += topic ? ' AND' : ' WHERE';
+    articlesQueryString += `
+articles.author = $${queryCount}`;
   }
   articlesQueryString += `
 GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
