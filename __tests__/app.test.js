@@ -72,6 +72,8 @@ describe('/api/topics', () => {
         });
     });
   });
+});
+describe('/api/topics/:slug', () => {
   describe('DELETE', () => {
     it(`responds to a valid request with a 204 status code and successfully deletes the topic from the database`, () => {
       return request(app)
@@ -1032,7 +1034,7 @@ describe('/api', () => {
         .expect(200)
         .then(({ body }) => {
           const { endpoints } = body;
-          expect(Object.keys(endpoints).length).toBe(8);
+          expect(Object.keys(endpoints).length).toBe(18);
           Object.values(endpoints).forEach((endpoint) => {
             expect(endpoint).toMatchObject({
               description: expect.any(String),
