@@ -1156,7 +1156,7 @@ describe('/api', () => {
         .expect(200)
         .then(({ body }) => {
           const { endpoints } = body;
-          expect(Object.keys(endpoints).length).toBe(18);
+          expect(Object.keys(endpoints).length).toBe(19);
           Object.values(endpoints).forEach((endpoint) => {
             expect(endpoint).toMatchObject({
               description: expect.any(String),
