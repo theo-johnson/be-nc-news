@@ -1,8 +1,12 @@
 You are now connected to database "nc_news_test" as user "theo".
- slug  |          description           
--------+--------------------------------
- mitch | The man, the Mitch, the legend
- cats  | Not dogs
- paper | what books are made of
-(3 rows)
+ username | article_id | vote_value 
+----------+------------+------------
+(0 rows)
 
+DELETE 0
+   username    | article_id | vote_value 
+---------------+------------+------------
+ butter_bridge |          2 |          1
+(1 row)
+
+INSERT 0 1

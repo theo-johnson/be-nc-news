@@ -39,3 +39,51 @@ RETURNING *;`;
     return;
   });
 };
+
+exports.updateUserVotes = (username, article_id, comment_id, vote_value) => {
+  const tableToUpdate = article_id
+    ? 'users_article_votes'
+    : 'users_comment_votes';
+  const columnToUpdate = article_id ? 'article_id' : 'comment_id';
+  const idToUpdate = article_id ? article_id : comment_id;
+
+  return db
+    .query(
+      `
+SELECT * FROM ${tableToUpdate}
+WHERE username = $1 AND ${columnToUpdate} = ${idToUpdate}`,
+      [username]
+    )
+    .then(({ rows }) => {
+      const voteAlreadyApplied = !rows.length
+        ? false
+        : rows[0].vote_value === vote_value;
+
+      const deleteQueryString = `
+DELETE FROM ${tableToUpdate}
+WHERE username = $1 AND ${columnToUpdate} = ${idToUpdate}
+RETURNING *;`;
+      const insertQueryString = `
+INSERT INTO ${tableToUpdate} (username, ${columnToUpdate}, vote_value)
+VALUES ($1, $2, $3)
+RETURNING *;`;
+
+      const queryPromises = [db.query(deleteQueryString, [username])];
+      if (!voteAlreadyApplied)
+        queryPromises.push(
+          db.query(insertQueryString, [username, idToUpdate, vote_value])
+        );
+
+      return Promise.all(queryPromises).then((promiseResults) => {
+        const responseObj =
+          promiseResults.length === 1
+            ? {
+                username,
+                [columnToUpdate]: idToUpdate,
+                vote_value: 0,
+              }
+            : promiseResults[1].rows[0];
+        return responseObj;
+      });
+    });
+};

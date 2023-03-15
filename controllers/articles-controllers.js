@@ -58,10 +58,10 @@ exports.getArticleComments = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   let article_id = req.params.article_id;
+  const { topic, current_user } = req.query;
 
   if (article_id === 'random') {
-    const { topic } = req.query;
-    fetchRandomArticle(topic)
+    fetchRandomArticle(topic, current_user)
       .then((article) => {
         res.status(200).send({ article });
       })
@@ -70,7 +70,7 @@ exports.getArticleById = (req, res, next) => {
       });
   } else {
     article_id = +article_id;
-    fetchArticleById(article_id)
+    fetchArticleById(article_id, current_user)
       .then((article) => {
         res.status(200).send({ article });
       })
