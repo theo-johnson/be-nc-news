@@ -76,7 +76,7 @@ exports.fetchArticleComments = (
     });
 };
 
-exports.fetchArticleById = (article_id) => {
+exports.fetchArticleById = (article_id, current_user) => {
   const articleQueryString = `
 SELECT articles.article_id, articles.author, articles.topic, articles.title, 
 articles.body, articles.created_at, articles.votes, articles.article_img_url, 
@@ -84,13 +84,21 @@ COUNT(comments.comment_id) AS comment_count
 FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id
 WHERE articles.article_id = $1
 GROUP BY articles.article_id;`;
-
   return db.query(articleQueryString, [article_id]).then(({ rows }) => {
     if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
-    else {
-      rows[0].comment_count = +rows[0].comment_count;
-      return rows[0];
-    }
+    rows[0].comment_count = +rows[0].comment_count;
+    if (!current_user) return rows[0];
+
+    const checkCurrentUserVotedQuery = `
+SELECT * FROM users_article_votes
+WHERE username = $1 AND article_id = $2;`;
+    return Promise.all([
+      rows[0],
+      db.query(checkCurrentUserVotedQuery, [current_user, article_id]),
+    ]).then(([article, { rows }]) => {
+      article.current_user_voted = !rows.length ? false : rows[0].vote_value;
+      return article;
+    });
   });
 };
 
@@ -187,11 +195,11 @@ RETURNING *;`;
   });
 };
 
-exports.fetchRandomArticle = (topic) => {
+exports.fetchRandomArticle = (topic, current_user) => {
   const queryValues = [];
   let articleQueryString = `
-SELECT articles.article_id, articles.author, articles.topic, articles.title, 
-articles.body, articles.created_at, articles.votes, articles.article_img_url, 
+SELECT articles.article_id, articles.author, articles.topic, articles.title,
+articles.body, articles.created_at, articles.votes, articles.article_img_url,
 COUNT(comments.comment_id) AS comment_count
 FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
   if (topic) {
@@ -205,9 +213,19 @@ ORDER BY RANDOM() LIMIT 1;`;
 
   return db.query(articleQueryString, queryValues).then(({ rows }) => {
     if (!rows[0]) return Promise.reject({ status: 404, msg: 'Not found' });
-    else {
-      rows[0].comment_count = +rows[0].comment_count;
-      return rows[0];
-    }
+
+    rows[0].comment_count = +rows[0].comment_count;
+    if (!current_user) return rows[0];
+
+    const checkCurrentUserVotedQuery = `
+SELECT * FROM users_article_votes
+WHERE username = $1 AND article_id = $2;`;
+    return Promise.all([
+      rows[0],
+      db.query(checkCurrentUserVotedQuery, [current_user, rows[0].article_id]),
+    ]).then(([article, { rows }]) => {
+      article.current_user_voted = !rows.length ? false : rows[0].vote_value;
+      return article;
+    });
   });
 };

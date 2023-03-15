@@ -46,19 +46,24 @@
   "POST /api/articles": {
     "description": "posts the article sent in the request body to the database and serves the posted article",
     "queries": [],
+    "exampleRequestBody": {
+      "article_id": 7,
+      "author": "icellusedkars",
+      "topic": "mitch",
+      "title": "Z",
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    },
     "exampleResponse": {
-      "articles": [
-        {
-          "article_id": 7,
-          "author": "icellusedkars",
-          "topic": "mitch",
-          "title": "Z",
-          "created_at": "2020-01-07T14:08:00.000Z",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 0
-        }
-      ]
+      "postedArticle": {
+        "article_id": 7,
+        "author": "icellusedkars",
+        "topic": "mitch",
+        "title": "Z",
+        "created_at": "2020-01-07T14:08:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 0
+      }
     }
   },
   "GET /api/articles/:article_id": {
@@ -98,6 +103,10 @@
   "PATCH /api/articles/:article_id": {
     "description": "updates an article. If the request body has an inc_votes property, increments the article's votes property by the value of inc_votes. If the request body has an article_img_url property, replaces the article's article_img_url with the updated one. Serves the updated article",
     "queries": [],
+    "exampleRequestBody": {
+      "inc_votes": 15,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    },
     "exampleResponse": {
       "updatedArticle": {
         "article_id": 2,
@@ -106,7 +115,7 @@
         "title": "Sony Vaio; or, The Laptop",
         "body": "Call me Mitchell.",
         "created_at": "2020-10-16T05:03:00.000Z",
-        "votes": 3,
+        "votes": 16,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "comment_count": 0
       }
@@ -120,6 +129,10 @@
   "POST /api/articles/:article_id/comments": {
     "description": "posts a new comment to the article with the specified article_id. Serves the posted comment",
     "queries": [],
+    "exampleRequestBody": {
+      "username": "butter_bridge",
+      "body": "Loved it, great article!"
+    },
     "exampleResponse": {
       "postedComment": {
         "comment_id": 19,
@@ -155,7 +168,16 @@
   "PATCH /api/comments/:comment_id": {
     "description": "updates the comment with the specified comment_id. If the request body has an inc_votes property, increments the article's votes property by the value of inc_votes",
     "queries": [],
-    "exampleResponse": {}
+    "exampleRequestBody": {
+      "inc_votes": 3
+    },
+    "exampleResponse": {
+      "comment_id": 2,
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "author": "butter_bridge",
+      "votes": 14,
+      "created_at": "2020-10-31T03:03:00.000Z"
+    }
   },
   "GET /api/users": {
     "description": "serves an array of users",
@@ -173,6 +195,11 @@
   "POST /api/users": {
     "description": "posts a new user to the database",
     "queries": [],
+    "exampleRequestBody": {
+      "username": "jmbo303",
+      "name": "Jimbob",
+      "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+    },
     "exampleResponse": {
       "postedUser": {
         "username": "lurker",
@@ -190,6 +217,19 @@
         "name": "do_nothing",
         "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
       }
+    }
+  },
+  "PATCH /api/users/:user_id": {
+    "description": "updates the user with the specified user_id. If the request body has an inc_votes property, increments the article's votes property by the value of inc_votes",
+    "queries": [],
+    "exampleRequestBody": {
+      "article_id": 2,
+      "vote_value": 1
+    },
+    "exampleResponse": {
+      "username": "butter_bridge",
+      "article_id": 2,
+      "vote_value": 1
     }
   },
   "DELETE /api/users/username": {

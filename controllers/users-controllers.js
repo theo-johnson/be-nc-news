@@ -3,6 +3,7 @@ const {
   fetchUserByUsername,
   insertUser,
   deleteUserFromDb,
+  updateUserVotes,
 } = require('../models/users-models');
 
 exports.getUsers = (req, res, next) => {
@@ -42,6 +43,18 @@ exports.deleteUserByUsername = (req, res, next) => {
   deleteUserFromDb(username)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchUserVotes = (req, res, next) => {
+  const { username } = req.params;
+  const { article_id, comment_id, vote_value } = req.body;
+  updateUserVotes(username, article_id, comment_id, vote_value)
+    .then((updatedUser) => {
+      res.status(200).send({ updatedUser });
     })
     .catch((err) => {
       next(err);

@@ -496,6 +496,43 @@ describe('/api/articles/:article_id', () => {
         });
       });
     });
+    describe('?current_user query', () => {
+      it(`responds with a 200 status code and the specified article object with a current_user_voted property set to false, when there is no database record of the user having already voted on the specified article`, () => {
+        return request(app)
+          .get('/api/articles/2?current_user=butter_bridge')
+          .expect(200)
+          .then(({ body }) => {
+            const { article } = body;
+            expect(article.current_user_voted).toBe(false);
+          });
+      });
+      it(`responds with a 200 status code and a random article object with a current_user_voted property set to false, when there is no database record of the user having already voted on the specified article and :article_id is 'random'`, () => {
+        return request(app)
+          .get('/api/articles/random?current_user=butter_bridge')
+          .expect(200)
+          .then(({ body }) => {
+            const { article } = body;
+            expect(article.current_user_voted).toBe(false);
+          });
+      });
+      it(`responds with a 200 status code and the specified article object with a current_user_voted property set to the value of the vote (1 or -1), when there is a database record of the user having already voted on the specified article`, () => {
+        return db
+          .query(
+            `
+INSERT INTO users_article_votes (username, article_id, vote_value)
+VALUES ('butter_bridge', 2 , -1);`
+          )
+          .then(() => {
+            return request(app)
+              .get('/api/articles/2?current_user=butter_bridge')
+              .expect(200)
+              .then(({ body }) => {
+                const { article } = body;
+                expect(article.current_user_voted).toBe(-1);
+              });
+          });
+      });
+    });
   });
   describe('PATCH', () => {
     const votesInput = { inc_votes: 3 };
@@ -1024,6 +1061,91 @@ describe('/api/users/:username', () => {
         });
     });
   });
+  describe('PATCH', () => {
+    it(`responds with a 200 status code and an object with the requested username, article_id and vote_value properties when request body has an article_id property`, () => {
+      const article_id = 2;
+      return request(app)
+        .patch('/api/users/butter_bridge')
+        .send({ article_id, vote_value: 1 })
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedUser } = body;
+          expect(updatedUser.article_id).toBe(2);
+          expect(updatedUser.username).toBe('butter_bridge');
+          expect(updatedUser.vote_value).toBe(1);
+        });
+    });
+    it(`responds with a 200 status code and an object with the requested username, comment_id and vote_value properties when request body has an comment_id property`, () => {
+      const comment_id = 2;
+      return request(app)
+        .patch('/api/users/butter_bridge')
+        .send({ comment_id, vote_value: -1 })
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedUser } = body;
+          expect(updatedUser.comment_id).toBe(2);
+          expect(updatedUser.username).toBe('butter_bridge');
+          expect(updatedUser.vote_value).toBe(-1);
+        });
+    });
+    it(`'toggles' the user vote depending whether there is already a user vote for the specified article_id in the database, always maintaining just one row per username/id combination`, () => {
+      const article_id = 2;
+      return request(app)
+        .patch('/api/users/butter_bridge')
+        .send({ article_id, vote_value: 1 })
+        .expect(200)
+        .then(() =>
+          db.query(`
+SELECT * FROM users_article_votes
+WHERE username = 'butter_bridge' AND article_id = 2;`)
+        )
+        .then(({ rows }) => {
+          expect(rows.length).toBe(1);
+          expect(rows[0].vote_value).toBe(1);
+          return request(app)
+            .patch('/api/users/butter_bridge')
+            .send({ article_id, vote_value: 1 })
+            .expect(200)
+            .then(() =>
+              db.query(`
+SELECT * FROM users_article_votes
+WHERE username = 'butter_bridge' AND article_id = 2;`)
+            )
+            .then(({ rows }) => {
+              expect(rows.length).toBe(0);
+            });
+        });
+    });
+    it(`deletes any previous vote records for the specified username/id combination, so that vote_value is always 1 or -1`, () => {
+      const article_id = 2;
+      return request(app)
+        .patch('/api/users/butter_bridge')
+        .send({ article_id, vote_value: 1 })
+        .expect(200)
+        .then(() =>
+          db.query(`
+SELECT * FROM users_article_votes
+WHERE username = 'butter_bridge' AND article_id = 2;`)
+        )
+        .then(({ rows }) => {
+          expect(rows.length).toBe(1);
+          expect(rows[0].vote_value).toBe(1);
+          return request(app)
+            .patch('/api/users/butter_bridge')
+            .send({ article_id, vote_value: -1 })
+            .expect(200)
+            .then(() =>
+              db.query(`
+SELECT * FROM users_article_votes
+WHERE username = 'butter_bridge' AND article_id = 2;`)
+            )
+            .then(({ rows }) => {
+              expect(rows.length).toBe(1);
+              expect(rows[0].vote_value).toBe(-1);
+            });
+        });
+    });
+  });
 });
 
 describe('/api', () => {
@@ -1034,7 +1156,7 @@ describe('/api', () => {
         .expect(200)
         .then(({ body }) => {
           const { endpoints } = body;
-          expect(Object.keys(endpoints).length).toBe(18);
+          expect(Object.keys(endpoints).length).toBe(19);
           Object.values(endpoints).forEach((endpoint) => {
             expect(endpoint).toMatchObject({
               description: expect.any(String),
