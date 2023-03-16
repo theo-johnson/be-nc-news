@@ -208,7 +208,7 @@
       }
     }
   },
-  "GET /api/users/username": {
+  "GET /api/users/:username": {
     "description": "serves the user object with the specified username",
     "queries": [],
     "exampleResponse": {
@@ -219,20 +219,22 @@
       }
     }
   },
-  "PATCH /api/users/:user_id": {
-    "description": "updates the user with the specified user_id. If the request body has an inc_votes property, increments the article's votes property by the value of inc_votes",
+  "PATCH /api/users/:username": {
+    "description": "updates the user with the specified username. If the request body has an inc_votes property, increments the article's votes property by the value of inc_votes",
     "queries": [],
     "exampleRequestBody": {
       "article_id": 2,
       "vote_value": 1
     },
     "exampleResponse": {
-      "username": "butter_bridge",
-      "article_id": 2,
-      "vote_value": 1
+      "updatedUser": {
+        "username": "butter_bridge",
+        "article_id": 2,
+        "vote_value": 1
+      }
     }
   },
-  "DELETE /api/users/username": {
+  "DELETE /api/users/:username": {
     "description": "deletes the user object with the specified username. If the user is the author of any articles, their author property is set to null",
     "queries": [],
     "exampleResponse": {}
